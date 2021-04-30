@@ -1,0 +1,58 @@
+.en-class {
+    font-family: ygo-en, serif;
+
+    .card-name {
+        font-family: ygo-en-name, serif;
+        top: 62px;
+        font-size: 158px;
+        letter-spacing: 1px;
+    }
+
+    .spell-trap {
+        font-family: ygo-en-race, serif;
+        top: 249px;
+        font-size: 74px;
+        letter-spacing: 1px;
+        right: 145px;
+
+        .spell-trap-icon {
+            margin-left: 10px;
+            margin-bottom: -20px;
+        }
+    }
+
+    .spell-trap-link {
+        font-family: ygo-en-race, serif;
+        top: 249px;
+        font-size: 74px;
+        letter-spacing: 1px;
+        right: 250px;
+
+        .spell-trap-icon {
+            margin-left: 10px;
+            margin-bottom: -20px;
+        }
+    }
+
+    .pendulum-description {
+        top: 1278px;
+        font-size: 42px;
+        line-height: 1.03;
+    }
+
+    .card-description {
+        top: 1521px;
+        font-size: 42px;
+        line-height: 1.03;
+
+        .card-effect {
+            font-family: ygo-en-race, serif;
+            font-size: 56px;
+            letter-spacing: 1px;
+        }
+    }
+
+    .small-description {
+        font-size: 36px;
+    }
+}

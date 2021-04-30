@@ -1,0 +1,55 @@
+.as-class {
+    font-family: ygo-astral, serif;
+
+    .card-name {
+        top: 95px;
+        font-size: 108px;
+        letter-spacing: -2px;
+    }
+
+    .spell-trap {
+        top: 250px;
+        font-size: 80px;
+        right: 140px;
+        letter-spacing: -2px;
+
+        .spell-trap-icon {
+            margin-top: 10px;
+        }
+    }
+
+    .spell-trap-link {
+        top: 250px;
+        font-size: 80px;
+        right: 250px;
+        letter-spacing: -2px;
+
+        .spell-trap-icon {
+            margin-top: 10px;
+        }
+    }
+
+    .pendulum-description {
+        top: 1286px;
+        font-size: 36px;
+        line-height: 1.18;
+        letter-spacing: -2px;
+    }
+
+    .card-description {
+        top: 1525px;
+        font-size: 38px;
+        line-height: 1.18;
+
+        .card-effect {
+            font-size: 46px;
+            text-indent: -0.2em;
+            margin-bottom: -16px;
+        }
+
+        .description-info {
+            margin-top: 16px;
+            letter-spacing: -2px;
+        }
+    }
+}

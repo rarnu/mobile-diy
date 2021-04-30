@@ -1,0 +1,88 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+
+android {
+    compileSdkVersion 30
+    buildToolsVersion "30.0.2"
+
+    defaultConfig {
+        applicationId "com.rarnu.diy.mobile"
+        minSdkVersion 29
+        targetSdkVersion 30
+        versionCode 333
+        versionName "3.3.3"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        multiDexEnabled true
+        ndk { abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86' }
+    }
+
+    compileOptions {
+        targetCompatibility = "8"
+        sourceCompatibility = "8"
+    }
+
+    bundle {
+        language {
+            enableSplit = false
+        }
+        density {
+            enableSplit = false
+        }
+        abi {
+            enableSplit = true
+
+        }
+    }
+
+    buildFeatures {
+        viewBinding true
+    }
+
+    aaptOptions {
+        noCompress 'zip', 'dat', 'pak'
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation(name: 'xwalk_core_lirary-77', ext: 'aar')
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+
+    implementation 'org.nanohttpd:nanohttpd:2.3.1'
+    implementation 'androidx.activity:activity-ktx:1.3.0-alpha07'
+    implementation 'androidx.fragment:fragment-ktx:1.3.3'
+
+    implementation 'com.github.isyscore:common-jvm:1.6.0'
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+}

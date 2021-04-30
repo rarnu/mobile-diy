@@ -1,0 +1,36 @@
+{
+    "name": "tools-vue",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "serve": "vue-cli-service serve",
+        "build": "vue-cli-service build"
+    },
+    "dependencies": {
+        "axios": "^0.21.1",
+        "blueimp-load-image": "^5.14.0",
+        "core-js": "^3.9.1",
+        "dayjs": "^1.10.4",
+        "element-plus": "^1.0.2-beta.33",
+        "html2canvas": "^1.0.0-rc.7",
+        "kuroshiro": "^1.1.2",
+        "kuroshiro-analyzer-kuromoji": "^1.1.0",
+        "lodash": "^4.17.21",
+        "mime": "^2.5.2",
+        "normalize.css": "^8.0.1",
+        "qs": "^6.9.6",
+        "vue": "^3.0.7",
+        "vue-router": "^4.0.4",
+        "vuex": "^4.0.0"
+    },
+    "devDependencies": {
+        "@vue/cli-plugin-babel": "^4.5.11",
+        "@vue/cli-plugin-router": "^4.5.11",
+        "@vue/cli-plugin-vuex": "^4.5.11",
+        "@vue/cli-service": "^4.5.11",
+        "@vue/compiler-sfc": "^3.0.7",
+        "compression-webpack-plugin": "^6.1.1",
+        "sass": "^1.32.8",
+        "sass-loader": "^10.1.1"
+    }
+}
