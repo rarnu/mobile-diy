@@ -22,7 +22,6 @@ export default {
   methods: {
     updateScrollbar() {
       this.$refs['main-scrollbar'].update();
-      // this.$refs['right-scrollbar'].update();
     }
   }
 };
@@ -48,12 +47,6 @@ export default {
   .page-form {
     height: 100%;
     width: 450px;
-    flex-shrink: 0;
-    border-left: 1px solid $border-color;
-  }
-  .page-ydk {
-    height: 100%;
-    width: 350px;
     flex-shrink: 0;
     border-left: 1px solid $border-color;
   }

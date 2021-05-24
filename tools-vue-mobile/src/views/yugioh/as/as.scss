@@ -31,18 +31,18 @@
 
     .pendulum-description {
         top: 1286px;
-        font-size: 36px;
+        font-size: calc(36px * var(--descriptionZoom));
         line-height: 1.18;
         letter-spacing: -2px;
     }
 
     .card-description {
         top: 1525px;
-        font-size: 38px;
+        font-size: calc(36px * var(--descriptionZoom));
         line-height: 1.18;
 
         .card-effect {
-            font-size: 46px;
+            font-size: calc(46px * var(--descriptionZoom));
             text-indent: -0.2em;
             margin-bottom: -16px;
         }

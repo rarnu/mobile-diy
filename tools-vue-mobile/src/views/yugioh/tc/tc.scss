@@ -28,17 +28,17 @@
 
     .pendulum-description {
         top: 1282px;
-        font-size: 36px;
+        font-size: calc(36px * var(--descriptionZoom));
         line-height: 1.2;
     }
 
     .card-description {
         top: 1528px;
-        font-size: 36px;
+        font-size: calc(36px * var(--descriptionZoom));
         line-height: 1.2;
 
         .card-effect {
-            font-size: 44px;
+            font-size: calc(44px * var(--descriptionZoom));
             text-indent: -0.5em;
             margin-bottom: -10px;
         }

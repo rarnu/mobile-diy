@@ -3,15 +3,16 @@ package com.rarnu.diy.mobile
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import androidx.appcompat.app.AppCompatActivity
 import com.isyscore.kotlin.common.HttpMethod
 import com.isyscore.kotlin.common.http
 import com.isyscore.kotlin.common.toJson
 import com.isyscore.kotlin.common.toObj
+import com.rarnu.diy.mobile.base.BaseActivity
 import com.rarnu.diy.mobile.databinding.ActivityEditkanaBinding
+import com.rarnu.diy.mobile.util.runOnMainThread
 import kotlin.concurrent.thread
 
-class EditKanaActivity: AppCompatActivity() {
+class EditKanaActivity: BaseActivity() {
 
     companion object {
         private const val MENU_ID_KANA_CARD = Menu.FIRST + 1

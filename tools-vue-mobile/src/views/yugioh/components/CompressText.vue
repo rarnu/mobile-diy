@@ -1,5 +1,5 @@
 <template>
-    <span v-compress-text="compressParams">
+    <span class="compress-text" v-compress-text="compressParams">
         <template v-for="item in textList">
             <span v-if="typeof item === 'object'" :class="['ruby', specColor === '1' ? 'red' : '', specColor === '2' ? 'gold' : '', specColor === '3' ? 'silver': '', specColor === '4' ? 'blue' : '']">{{ item.ruby }}<span class="rt" v-compress-rt>{{ item.rt }}</span></span>
             <span v-else :class="['ruby', specColor === '1' ? 'red' : '', specColor === '2' ? 'gold' : '', specColor === '3' ? 'silver': '', specColor === '4' ? 'blue' : '']" :style="noCompress.includes(item) ? noCompressStyle : ''">{{ item }}</span>
@@ -10,7 +10,7 @@
 <script>
 export default {
   name: 'CompressText',
-  props: ['text', 'width', 'height', 'language', 'fontLoading', 'autoSizeElement', 'specColor'],
+  props: ['text', 'width', 'height', 'language', 'refreshKey', 'fontLoading', 'autoSizeElement', 'specColor', 'limit'],
   data() {
     return {
       noCompress: '●①②③④⑤⑥⑦⑧⑨⑩',
@@ -20,6 +20,7 @@ export default {
   computed: {
     compressParams() {
       return {
+        limit: this.limit,
         specColor: this.specColor,
         width: this.width,
         height: this.height,
@@ -54,6 +55,10 @@ export default {
         // 强制刷新
         this.$forceUpdate();
       }
+    },
+    refreshKey() {
+      // 强制刷新
+      this.$forceUpdate();
     }
   },
   directives: {
@@ -123,16 +128,17 @@ export default {
           let scale = 0.5;
           let start = 0;
           let end = 1;
-          // let time = 0;
+          let time = 0;
+          let limit = parseInt(params.limit);
           while (scale > 0) {
-            // time++;
-            scale = (start + end) / 2;
+            time++;
+            scale = (start + end) / (params.language === 'en' ? 2 : 2.05);
             el.style.width = `${params.width / scale}px`;
             el.style.transform = `scaleX(${scale})`;
             el.clientHeight > params.height ? end = scale : start = scale;
-            if (el.clientHeight <= params.height && end - start <= /*0.01*/ 0.02) {
+            if ((el.clientHeight <= params.height && end - start <= /*0.01*/ 0.02) || (time > limit)) {
               // 如果是英文，灵摆和效果栏字体判断缩小
-              if (params.language === 'en' && params.autoSizeElement && (scale < /*0.7*/ 0.5)) {
+              if (params.language === 'en' && params.autoSizeElement && (scale < 0.5)) {
                 // 防止死循环
                 if (autoSizeElement?.classList.contains('small-description')) {
                   break;
@@ -158,61 +164,67 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.ruby {
-  position: relative;
-  //white-space:pre-wrap;
+.compress-text {
 
-  .rt {
-    -webkit-text-stroke: 0 transparent;
-    font-family: ygo-tip, sans-serif;
-    font-size: 16px;
-    font-weight: bold;
-    position: absolute;
-    left: 0;
-    text-align: center;
-    white-space: nowrap;
-    letter-spacing: 0;
-    text-indent: 0;
-    transform-origin: 0 0;
+  transform-origin: 0 0;
 
-    &.justify {
-      text-align-last: justify;
-      left: 5%;
-      width: 90%;
+
+  .ruby {
+    position: relative;
+    //white-space:pre-wrap;
+
+    .rt {
+      -webkit-text-stroke: 0 transparent;
+      font-family: ygo-tip, sans-serif;
+      font-size: 12px;
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+      text-align: center;
+      white-space: nowrap;
+      letter-spacing: 0;
+      text-indent: 0;
+      transform-origin: 0 0;
+
+      &.justify {
+        text-align-last: justify;
+        left: 5%;
+        width: 90%;
+      }
     }
   }
-}
 
-.red {
-  -webkit-background-clip: text;
-  background-image: linear-gradient(#a31818, #ff5050, #a31818);
-  color: transparent;
-  display: inline-block;
-  -webkit-text-stroke: 1px #800000;
-}
+  .red {
+    -webkit-background-clip: text;
+    background-image: linear-gradient(#a31818, #ff5050, #a31818);
+    color: transparent;
+    display: inline-block;
+    -webkit-text-stroke: 1px #800000;
+  }
 
-.blue {
-  -webkit-background-clip: text;
-  background-image: linear-gradient(#8600FF, #CA8EFF, #96FED1, #8600FF);
-  color: transparent;
-  display: inline-block;
-  -webkit-text-stroke: 1px #5B00AE;
-}
+  .blue {
+    -webkit-background-clip: text;
+    background-image: linear-gradient(#8600FF, #CA8EFF, #96FED1, #8600FF);
+    color: transparent;
+    display: inline-block;
+    -webkit-text-stroke: 1px #5B00AE;
+  }
 
-.gold {
-  -webkit-background-clip: text;
-  background-image: linear-gradient(#DAA520, #FFFF00, #DAA520);
-  color: transparent;
-  display: inline-block;
-  -webkit-text-stroke: 1px #A0522D;
-}
+  .gold {
+    -webkit-background-clip: text;
+    background-image: linear-gradient(#DAA520, #FFFF00, #DAA520);
+    color: transparent;
+    display: inline-block;
+    -webkit-text-stroke: 1px #A0522D;
+  }
 
-.silver {
-  -webkit-background-clip: text;
-  background-image: linear-gradient(#C0C0C0, #F5F5F5, #C0C0C0);
-  color: transparent;
-  display: inline-block;
-  -webkit-text-stroke: 1px #696969;
-}
+  .silver {
+    -webkit-background-clip: text;
+    background-image: linear-gradient(#C0C0C0, #F5F5F5, #C0C0C0);
+    color: transparent;
+    display: inline-block;
+    -webkit-text-stroke: 1px #696969;
+  }
 
+}
 </style>

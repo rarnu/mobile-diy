@@ -3,46 +3,48 @@
     <Page>
       <template #default>
         <div class="form-main">
+          <div class="font-loading" v-if="fontLoading">
+            <i class="el-icon-loading"></i>
+            <span>字体加载中...</span>
+          </div>
+
           <el-form ref="form" :model="form" label-width="auto" size="small">
             <el-form-item label="文件">
-              <el-row :gutter="10">
-                <el-col :span="5">
-                  <el-button type="primary" @click="newCard">新建</el-button>
-                </el-col>
-                <el-col :span="5">
-                  <el-button type="primary" @click="importJson">打开</el-button>
-                </el-col>
-                <el-col :span="5">
-                  <el-button type="primary" @click="exportJson">保存</el-button>
-                </el-col>
-                <el-col :span="5">
-                  <el-button type="warning" @click="shareCardData">分享</el-button>
-                </el-col>
-              </el-row>
+              <el-button type="primary" @click="newCard">新建</el-button>
+              <el-button type="primary" @click="openCard">打开</el-button>
+              <el-button type="primary" @click="saveCard">保存</el-button>
+              <el-button type="success" @click="shareCard">分享</el-button>
             </el-form-item>
             <el-form-item label="语言">
-              <el-row :gutter="10">
-                <el-col :span="18">
-                  <el-select v-model="form.language" placeholder="请选择语言" @change="changeLanguage">
-                    <el-option label="简体中文" value="sc"></el-option>
-                    <el-option label="繁体中文" value="tc"></el-option>
-                    <el-option label="日文" value="jp"></el-option>
-                    <el-option label="英文" value="en"></el-option>
-                    <el-option label="星光体" value="as"></el-option>
-                    <el-option label="奥利哈钢" value="or"></el-option>
-                  </el-select>
-                </el-col>
-                <el-col :span="6">
-                  <el-button type="primary" style="width: 100%;" :loading="randomLoading" @click="getRandomCard">随机一卡</el-button>
-                </el-col>
-              </el-row>
+             <el-row :gutter="10">
+               <el-col :span="18">
+                 <el-select v-model="form.language" placeholder="请选择语言" @change="changeLanguage">
+                   <el-option label="简体中文" value="sc"></el-option>
+                   <el-option label="繁体中文" value="tc"></el-option>
+                   <el-option label="日文" value="jp"></el-option>
+                   <el-option label="英文" value="en"></el-option>
+                   <el-option label="韩文" value="kr"></el-option>
+                   <el-option label="星光体" value="as"></el-option>
+                   <el-option label="奥利哈钢" value="or"></el-option>
+                 </el-select>
+               </el-col>
+               <el-col :span="6">
+                 <el-button type="primary" style="width: 100%" :loading="randomLoading" @click="getRandomCard">随机一卡</el-button>
+               </el-col>
+             </el-row>
             </el-form-item>
             <el-form-item label="卡名">
               <el-autocomplete v-model="form.name" :fetch-suggestions="fetchCardName" placeholder="请输入卡名" @select="selectCardName"></el-autocomplete>
             </el-form-item>
             <el-form-item label="注音">
-              <el-button type="primary" :disabled="form.language !== 'jp'" @click="remoteKana">远程注音</el-button>
-              <el-button type="success" @click="editTextKana">注音文本编辑</el-button>
+              <el-row :gutter="10">
+                <el-col :span="6">
+                  <el-button type="primary" :disabled="form.language !== 'jp' || !useKK" style="width: 100%" @click="remoteKana">远程注音</el-button>
+                </el-col>
+                <el-col :span="9">
+                  <el-switch v-model="useKK" :disabled="form.language !== 'jp'" active-text="启用注音"></el-switch>
+                </el-col>
+              </el-row>
             </el-form-item>
             <el-form-item label="颜色">
               <el-color-picker v-model="form.color"></el-color-picker>
@@ -68,52 +70,72 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item label="图标" v-if="['spell','trap'].includes(form.type)">
-              <el-select v-model="form.icon" placeholder="请选择图标" clearable>
-                <el-option label="装备" value="equip"></el-option>
-                <el-option label="场地" value="filed"></el-option>
-                <el-option label="速攻" value="quick-play"></el-option>
-                <el-option label="仪式" value="ritual"></el-option>
-                <el-option label="永续" value="continuous"></el-option>
-                <el-option label="反击" value="counter"></el-option>
-                <el-option label="连接／通常" value="link-normal"></el-option>
-                <el-option label="连接／装备" value="link-equip"></el-option>
-                <el-option label="连接／场地" value="link-filed"></el-option>
-                <el-option label="连接／速攻" value="link-quick-play"></el-option>
-                <el-option label="连接／仪式" value="link-ritual"></el-option>
-                <el-option label="连接／永续" value="link-continuous"></el-option>
-                <el-option label="连接／反击" value="link-counter"></el-option>
-              </el-select>
+              <el-row :gutter="10">
+                <el-col :span="12">
+                  <el-select v-model="form.icon" placeholder="请选择图标" clearable>
+                    <el-option label="装备" value="equip"></el-option>
+                    <el-option label="场地" value="filed"></el-option>
+                    <el-option label="速攻" value="quick-play"></el-option>
+                    <el-option label="仪式" value="ritual"></el-option>
+                    <el-option label="永续" value="continuous"></el-option>
+                    <el-option label="反击" value="counter"></el-option>
+                    <el-option label="连接／通常" value="link-normal"></el-option>
+                    <el-option label="连接／装备" value="link-equip"></el-option>
+                    <el-option label="连接／场地" value="link-filed"></el-option>
+                    <el-option label="连接／速攻" value="link-quick-play"></el-option>
+                    <el-option label="连接／仪式" value="link-ritual"></el-option>
+                    <el-option label="连接／永续" value="link-continuous"></el-option>
+                    <el-option label="连接／反击" value="link-counter"></el-option>
+                  </el-select>
+                </el-col>
+                <el-col :span="12">
+                  <el-switch v-model="specialColor" active-text="特殊调色"></el-switch>
+                </el-col>
+              </el-row>
             </el-form-item>
             <el-form-item label="图片">
-              <el-button type="primary" @click="uploadImage">相册</el-button>
-              <el-button type="primary" @click="takePhotoImage">拍照</el-button>
-              <el-button style="margin-left: 10px" plain @click="deleteImage">删除</el-button>&nbsp;&nbsp;&nbsp;
-              <el-image v-if="form.image" :src="form.image" :lazy="true" :style="imageStyle"/>
+              <el-row :gutter="10" style="height: 36px; margin-top: 2px;">
+                <el-col :span="14">
+                  <el-button type="primary" @click="selectFromAlbum">相册</el-button>
+                  <el-button type="primary" @click="takePhoto">拍照</el-button>
+                  <el-button style="margin-left: 10px" plain @click="deleteImage">删除</el-button>
+                </el-col>
+                <el-col :span="6">
+                  <el-image :src="form.image" style="width: 32px; height: 32px;" v-show="form.image !== ''"/>
+                </el-col>
+              </el-row>
             </el-form-item>
             <el-form-item label="卡类" v-if="form.type==='monster'">
-              <el-select v-model="form.cardType" placeholder="请选择卡类">
-                <el-option label="通常" value="normal"></el-option>
-                <el-option label="效果" value="effect"></el-option>
-                <el-option label="仪式" value="ritual"></el-option>
-                <el-option label="融合" value="fusion"></el-option>
-                <el-option label="同调" value="synchro"></el-option>
-                <el-option label="黑暗同调" value="darksync"></el-option>
-                <el-option label="超量" value="xyz"></el-option>
-                <el-option label="连接" value="link"></el-option>
-                <el-option label="衍生物" value="token"></el-option>
-              </el-select>
+                  <el-select v-model="form.cardType" placeholder="请选择卡类">
+                    <el-option label="通常" value="normal"></el-option>
+                    <el-option label="效果" value="effect"></el-option>
+                    <el-option label="仪式" value="ritual"></el-option>
+                    <el-option label="融合" value="fusion"></el-option>
+                    <el-option label="同调" value="synchro"></el-option>
+                    <el-option label="黑暗同调" value="darksync"></el-option>
+                    <el-option label="超量" value="xyz"></el-option>
+                    <el-option label="连接" value="link"></el-option>
+                    <el-option label="衍生物" value="token"></el-option>
+                  </el-select>
             </el-form-item>
             <el-form-item label="灵摆" v-if="form.type==='pendulum'">
-              <el-select v-model="form.pendulumType" placeholder="请选择灵摆">
-                <el-option label="通常／灵摆" value="normal-pendulum"></el-option>
-                <el-option label="效果／灵摆" value="effect-pendulum"></el-option>
-                <el-option label="仪式／灵摆" value="ritual-pendulum"></el-option>
-                <el-option label="融合／灵摆" value="fusion-pendulum"></el-option>
-                <el-option label="同调／灵摆" value="synchro-pendulum"></el-option>
-                <el-option label="黑暗同调／灵摆" value="darksync-pendulum"></el-option>
-                <el-option label="超量／灵摆" value="xyz-pendulum"></el-option>
-                <el-option label="链接／灵摆" value="link-pendulum"></el-option>
-              </el-select>
+              <el-row :gutter="10">
+                <el-col :span="12">
+                  <el-select v-model="form.pendulumType" placeholder="请选择灵摆">
+                    <el-option label="通常／灵摆" value="normal-pendulum"></el-option>
+                    <el-option label="效果／灵摆" value="effect-pendulum"></el-option>
+                    <el-option label="仪式／灵摆" value="ritual-pendulum"></el-option>
+                    <el-option label="融合／灵摆" value="fusion-pendulum"></el-option>
+                    <el-option label="同调／灵摆" value="synchro-pendulum"></el-option>
+                    <el-option label="黑暗同调／灵摆" value="darksync-pendulum"></el-option>
+                    <el-option label="超量／灵摆" value="xyz-pendulum"></el-option>
+                    <el-option label="链接／灵摆" value="link-pendulum"></el-option>
+                  </el-select>
+                </el-col>
+                <el-col :span="12">
+                  <el-switch v-model="specialColor" :disabled="form.pendulumType !== 'effect-pendulum' && form.pendulumType !== 'normal-pendulum'" active-text="特殊调色"></el-switch>
+                </el-col>
+              </el-row>
             </el-form-item>
             <el-form-item label="星级" v-if="showLevel || showMinusLevel">
               <el-input-number v-model="form.level" :min="0" :max="13" :precision="0"></el-input-number>
@@ -166,6 +188,9 @@
               <el-switch v-model="form.firstLineCompress" active-text="首行压缩(只有一行时无效)"></el-switch>
               <el-input type="textarea" :autosize="{minRows: 3}" v-model="form.description" placeholder="请输入效果"></el-input>
             </el-form-item>
+            <el-form-item label="字号">
+              <el-slider v-model="form.descriptionZoom" :min="0.5" :max="1.5" :step="0.02" @input="changeDescriptionZoom"></el-slider>
+            </el-form-item>
             <el-form-item label="卡包">
               <el-input v-model="form.package" placeholder="请输入卡包"></el-input>
             </el-form-item>
@@ -178,8 +203,8 @@
             </el-form-item>
             <el-form-item label="版权">
               <el-select v-model="form.copyright" placeholder="请选择版权" clearable>
-                <el-option label="简体中文" value="sc"></el-option>
-                <el-option label="日文" value="jp"></el-option>
+                <el-option label="简体中文/韩文" value="sc"></el-option>
+                <el-option label="繁体中文/日文" value="jp"></el-option>
                 <el-option label="英文" value="en"></el-option>
               </el-select>
             </el-form-item>
@@ -200,15 +225,19 @@
                 </el-form-item>
               </el-col>
             </el-row>
-            <el-form-item label="闪卡">
-              <el-row :gutter="10">
-                <el-col :span="8">
-                  <el-switch v-model="form.flash0" active-text="背景"></el-switch>&nbsp;&nbsp;
-                </el-col>
-                <el-col :span="8">
-                  <el-switch v-model="form.flash1" active-text="效果框"></el-switch>&nbsp;&nbsp;
-                </el-col>
-                <el-col :span="8">
+            <el-row :gutter="10">
+              <el-col :span="8">
+                <el-form-item label="背景">
+                  <el-switch v-model="form.flash0" :disabled="printMode"></el-switch>&nbsp;&nbsp;
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="框闪">
+                  <el-switch v-model="form.flash1" :disabled="printMode"></el-switch>
+                </el-form-item>
+              </el-col>
+              <el-col :span="8">
+                <el-form-item label="卡名">
                   <el-select v-model="form.redName">
                     <el-option label="无" value=""></el-option>
                     <el-option label="红碎" value="1"></el-option>
@@ -216,11 +245,11 @@
                     <el-option label="银字" value="3"></el-option>
                     <el-option label="蓝碎" value="4"></el-option>
                   </el-select>
-                </el-col>
-              </el-row>
-            </el-form-item>
+                </el-form-item>
+              </el-col>
+            </el-row>
             <el-form-item label="卡面">
-              <el-radio-group v-model="form.flash2">
+              <el-radio-group v-model="form.flash2" :disabled="printMode">
                 <el-radio-button label="0">0</el-radio-button>
                 <el-radio-button label="1">1</el-radio-button>
                 <el-radio-button label="2">2</el-radio-button>
@@ -230,21 +259,17 @@
             </el-form-item>
           </el-form>
         </div>
-
-        <KanjiKanaDialog v-model="kanjiKanaDialog"></KanjiKanaDialog>
         <RaceDialog v-model="raceDialog" :raceText="form.monsterType" :language="form.language" @transferRace="getRace"></RaceDialog>
-        <EffectDialog v-model="effectDialog"></EffectDialog>
       </template>
-
     </Page>
   </div>
 </template>
 
 <script>
 import Page from '@/components/page/Page';
-import KanjiKanaDialog from '@/views/yugioh/components/KanjiKanaDialog';
+import CompressText from '@/views/yugioh/components/CompressText';
 import RaceDialog from "@/views/yugioh/components/RaceDialog";
-import EffectDialog from "@/views/yugioh/components/EffectDialog";
+import html2canvas from '@/assets/js/html2canvas';
 import loadImage from 'blueimp-load-image';
 import scDemo from './sc/sc-demo';
 import tcDemo from './tc/tc-demo';
@@ -252,20 +277,29 @@ import jpDemo from './jp/jp-demo';
 import enDemo from './en/en-demo';
 import asDemo from './as/as-demo';
 import orDemo from './or/or-demo';
+import krDemo from './kr/kr-demo';
+import jpDataDemo from './jp/jp-data-demo';
+import sc2tc from "@/assets/js/sc2tc";
 
 export default {
 
   name: 'DataView',
   components: {
     Page,
-    EffectDialog,
-    KanjiKanaDialog,
+    CompressText,
     RaceDialog
   },
   data() {
     return {
+      refreshKey: 0,
+      fontLoading: true,
       searchLoading: false,
       randomLoading: false,
+      exportLoading: false,
+      useKK: true,
+      kanaServer: true,
+      specialColor: false,
+      currentCardData: {},
       form: {
         language: 'jp',
         name: '',
@@ -291,162 +325,84 @@ export default {
         laser: false,
         radius: false,
         cardBack: false,
-        scale: 0.30,
+        scale: 0.5,
         firstLineCompress: false,
         flash0: false,
         flash1: false,
         flash2: 0,
-        redName: ''
+        redName: '',
+        scalePendulumImage: false,
+        descriptionZoom: 1
       },
       lastDescriptionHeight: 300,   // 最后一行效果压缩高度
       kanjiKanaDialog: false,
       raceDialog: false,
-      effectDialog: false
+      effectDialog: false,
+      ydkData: [],           // 读入 YDK 时填充
+      printMode: false,      // 打印模式，将使用另一套卡模
+      batchExporting: false, // 正在批量导出
+      exportDirectory: ''    // 要导出的文件所在的目录
     };
   },
   created() {
-    try {
-      diy.initCard();
-    } catch (e) {
-
-    }
+    Object.assign(this.currentCardData, jpDataDemo);
+    Object.assign(this.form, jpDemo);
   },
   mounted() {
     window.assignCardData = this.assignCardData;
-    window.getFormData = this.getFormData;
     window.setImage = this.setImage;
-
-    document.fonts.ready.then();
+    window.getFormData = this.getFormData;
+    window.setScale = this.setScale;
+    document.fonts.ready.then(() => {
+      this.fontLoading = false;
+      this.refreshKey++;
+    });
   },
   methods: {
-    shareCardData() {
+    setScale(w) {
+      this.form.scale = w / 1393.0;
+    },
+    shareCard() {
       try {
         diy.openShareCard(this.cardName);
       } catch (e) {
 
       }
     },
-    getFormData() {
-      return this.form;
-    },
-    baseImage(path) {
-      return require('@/assets/image' + path);
-    },
-    newCard() {
-      Object.assign(this.form, jpDemo);
-    },
-    randomPassword() {
-      let rand = '';
-      for (let i = 0; i < 8; i++) {
-        rand += Math.floor(Math.random() * 10);
-      }
-      this.form.password = rand;
-    },
-    async getRandomCard() {
-      this.randomLoading = true;
-      let res = await this.axios({
-        method: 'get',
-        url: '/yugioh/random-card',
-        params: {
-          lang: this.form.language
-        }
-      });
-      let cardInfo = await this.parseYugiohCard(res.data.data, this.form.language);
-      Object.assign(this.form, cardInfo);
-      this.randomLoading = false;
-    },
-    importJson() {
+    openCard() {
       try {
         diy.openJsonFile();
       } catch (e) {
 
       }
     },
-    exportJson() {
-      let data = JSON.stringify(this.form);
+    saveCard() {
       try {
-        diy.saveJsonFile(data);
+        diy.saveJsonFile(JSON.stringify(this.form));
       } catch (e) {
       }
     },
-    assignCardData(data) {
-      Object.assign(this.form, data);
-      this.refreshFont();
+    getFormData() {
+      return this.form;
     },
-    getRace(race) {
-      // 从 Race 对话框回传过来的
-      this.form.monsterType = race;
+    setImage(data) {
+      this.form.image = data;
     },
-    // 刷新字体
-    refreshFont() {
-      setTimeout(() => {
-        document.fonts.ready.then();
-      });
-    },
-    changeLanguage(value) {
-      if (value === 'sc') {
-        Object.assign(this.form, scDemo);
-      } else if (value === 'tc') {
-        Object.assign(this.form, tcDemo);
-      } else if (value === 'jp') {
-        Object.assign(this.form, jpDemo);
-      } else if (value === 'en') {
-        Object.assign(this.form, enDemo);
-      } else if (value === 'as') {
-        Object.assign(this.form, asDemo);
-      } else if (value === 'or') {
-        Object.assign(this.form, orDemo);
-      }
-      this.refreshFont();
-    },
-    setImage(imgData) {
-      console.log('js: setImage: ' + imgData);
-      this.form.image = imgData;
-    },
-    uploadImage() {
-      try {
-        diy.uploadImage();
-      } catch (e) {
-      }
-    },
-    takePhotoImage() {
+    takePhoto() {
       try {
         diy.takePhotoImage();
       } catch (e) {
+
       }
     },
-    deleteImage() {
-      this.form.image = '';
-    },
-    toggleArrow(item) {
-      if (this.form.arrowList.includes(item)) {
-        this.form.arrowList = this.form.arrowList.filter(value => value !== item);
-      } else {
-        this.form.arrowList.push(item);
-      }
-    },
-    arrowItemStyle(item) {
-      let border = '';
-      let color = '';
-      if (this.form.arrowList.includes(item)) {
-        border = '1px solid darkorange';
-        color = 'darkorange';
-      }
-      return {
-        border: border,
-        color: color,
-        visibility: item === 9 ? 'hidden' : ''
-      };
-    },
-    editTextKana() {
+    selectFromAlbum() {
       try {
-        diy.editTextKana();
+        diy.uploadImage();
       } catch (e) {
 
       }
     },
     remoteKana() {
-      // 从远程服务器请求注音
       // 从远程服务器请求注音
       this.kanjiKanaAPI(this.cardName).then(kk => {
         if (kk) {
@@ -480,11 +436,114 @@ export default {
         }
       });
     },
+    baseImage(path) {
+      return require('@/assets/image' + path);
+    },
+    newCard() {
+      Object.assign(this.form, jpDemo);
+    },
+    assignCardData(data) {
+      Object.assign(this.form, data);
+    },
+    getRace(race) {
+      // 从 Race 对话框回传过来的
+      this.form.monsterType = race;
+    },
+    // 刷新字体
+    refreshFont() {
+      setTimeout(() => {
+        this.fontLoading = true;
+        document.fonts.ready.then(() => {
+          this.fontLoading = false;
+          this.refreshKey++;
+        });
+      });
+    },
+    changeLanguage(value) {
+      if (value === 'sc') {
+        Object.assign(this.form, scDemo);
+      } else if (value === 'tc') {
+        Object.assign(this.form, tcDemo);
+      } else if (value === 'jp') {
+        Object.assign(this.currentCardData, jpDataDemo);
+        Object.assign(this.form, jpDemo);
+      } else if (value === 'en') {
+        Object.assign(this.form, enDemo);
+      } else if (value === 'as') {
+        Object.assign(this.form, asDemo);
+      } else if (value === 'or') {
+        Object.assign(this.form, orDemo);
+      } else if (value === 'kr') {
+        Object.assign(this.form, krDemo);
+      }
+      this.refreshFont();
+    },
+    beforeUpload(file) {
+      let flag = file.type.includes('image');
+      if (flag) {
+        loadImage(file, {
+          canvas: true,
+          top: 0,
+          aspectRatio: 1
+        }).then(data => {
+          this.form.image = data.image.toDataURL('image/png', 1);
+        });
+      } else {
+        this.$message.warning('请选择正确图片格式');
+      }
+      return false;
+    },
+    deleteImage() {
+      this.form.image = '';
+    },
+    inputPendulumDescription() {
+      // 不保留换行符号
+      if (this.form.pendulumDescription.includes('\n')) {
+        this.$message.warning('不允许换行符');
+        this.form.pendulumDescription = this.form.pendulumDescription.replace('\n', '');
+      }
+    },
+    changeDescriptionZoom() {
+      this.refreshKey++;
+    },
+    toggleArrow(item) {
+      if (this.form.arrowList.includes(item)) {
+        this.form.arrowList = this.form.arrowList.filter(value => value !== item);
+      } else {
+        this.form.arrowList.push(item);
+      }
+    },
+    arrowItemStyle(item) {
+      let border = '';
+      let color = '';
+      if (this.form.arrowList.includes(item)) {
+        border = '1px solid darkorange';
+        color = 'darkorange';
+      }
+      return {
+        border: border,
+        color: color,
+        visibility: item === 9 ? 'hidden' : ''
+      };
+    },
+    // 获取最后一行效果的压缩高度
+    getLastDescriptionHeight() {
+      let lastDescription = document.querySelector('.last-description');
+      if (lastDescription) {
+        if (['monster', 'pendulum'].includes(this.form.type)) {
+          this.lastDescriptionHeight = 330 - lastDescription.offsetTop;
+        } else {
+          this.lastDescriptionHeight = 380 - lastDescription.offsetTop;
+        }
+      } else {
+        this.lastDescriptionHeight = 0;
+      }
+    },
     fetchCardName(value, callback) {
       if (value) {
         this.axios({
           method: 'get',
-          url: '/yugioh/card',
+          url: '/yugioh/list',
           params: {
             name: this.cardName,
             lang: this.form.language
@@ -501,35 +560,217 @@ export default {
     },
     selectCardName(value) {
       this.form.name = value.name;
-      this.form.password = value.id;
+      this.form.password = `${value.id}`;
       this.searchCardByPassword();
     },
     async parseData(data) {
-      let cardInfo = await this.parseYugiohCard(data, this.form.language);
+      Object.assign(this.currentCardData, data);
+      let cardInfo = await this.parseYugiohCard(data, this.form.language, this.useKK);
       Object.assign(this.form, cardInfo);
-    },
-    searchByPassword(p) {
-      this.form.password = p;
-      this.searchCardByPassword();
     },
     searchCardByPassword() {
       this.searchLoading = true;
-      this.axios({
+      this.form.password = this.form.password.trim();
+      if (this.form.language === 'tc') {
+        this.axios.get(`/yugioh/card/${this.form.password}?lang=tc`)
+            .then(res => {
+              this.parseData(res.data.data);
+            })
+            .catch(res => {
+              // 繁中取不到的情况，取简中来翻译
+              this.axios.get(`/yugioh/card/${this.form.password}?lang=sc`)
+                  .then(res1 => {
+                    let resConv = {};
+                    Object.assign(resConv, res1.data.data);
+                    resConv.name = sc2tc.simple2Traditional(res1.data.data.name);
+                    resConv.desc = sc2tc.simple2Traditional(res1.data.data.desc);
+                    this.parseData(resConv);
+                  });
+            }).finally(() => {
+          this.searchLoading = false;
+        });
+      } else {
+        this.axios({
+          method: 'get',
+          url: '/yugioh/card/' + this.form.password,
+          params: {
+            lang: this.form.language
+          }
+        }).then(res => {
+          this.parseData(res.data.data);
+        }).finally(() => {
+          this.searchLoading = false;
+        });
+      }
+    },
+    randomPassword() {
+      let rand = '';
+      for (let i = 0; i < 8; i++) {
+        rand += Math.floor(Math.random() * 10);
+      }
+      this.form.password = rand;
+    },
+    async getRandomCard() {
+      this.randomLoading = true;
+      let res = await this.axios({
         method: 'get',
-        url: '/yugioh/card/' + this.form.password,
+        url: '/yugioh/random',
         params: {
           lang: this.form.language
         }
-      }).then(res => {
-        this.parseData(res.data.data);
-      }).finally(() => {
-        this.searchLoading = false;
       });
+      Object.assign(this.currentCardData, res.data.data);
+      let cardInfo = await this.parseYugiohCard(res.data.data, this.form.language, this.useKK);
+      Object.assign(this.form, cardInfo);
+      this.randomLoading = false;
     },
+    exportJson() {
+      let data = JSON.stringify(this.form);
+      let blob = new Blob([data], {type: 'application/json'});
+      this.downloadBlob(blob, this.cardName);
+    },
+    exportImage() {
+      this.exportLoading = true;
+      let element = document.querySelector('.yugioh-card');
+      html2canvas(element, {
+        useCORS: true,
+        backgroundColor: 'transparent',
+        width: this.form.scale * 1393,
+        height: this.form.scale * 2031,
+      }).then(canvas => {
+        let dataURL = canvas.toDataURL('image/png', 1);
+        try {
+          diy.receiveImageData(dataURL);
+        } catch (e) {
+
+        }
+        // let blob = this.dataURLtoBlob(dataURL);
+        // this.downloadBlob(blob, this.cardName);
+      }).finally(() => {
+        this.exportLoading = false;
+      });
+    }
   },
   computed: {
-    cardName() {
-      return this.form.name.replace(/\[(.*?)\(.*?\)]/g, '$1');
+    cardClass() {
+      return `${this.form.language}-class ${this.form.cardBack ? 'card-back' : ''}`;
+    },
+    cardStyle() {
+      let background;
+      let cp = this.printMode ? 'pcard' : 'card';
+      if (this.form.type === 'pendulum') {
+        if (this.form.pendulumType === 'normal-pendulum' || this.form.pendulumType === 'effect-pendulum') {
+          if (this.specialColor) {
+            cp = 'scard';
+          }
+        }
+      } else if (this.form.type === 'monster') {
+        if (this.form.cardType !== 'darksync') {
+          if (this.specialColor) {
+            cp = 'scard';
+          }
+        }
+      } else if (this.form.type === 'spell' || this.form.type === 'trap') {
+        if (this.specialColor) {
+          cp = 'scard';
+        }
+      }
+      if (this.form.cardBack) {
+        let u = this.baseImage('/card-back.png');
+        background = `url(${u}) no-repeat center/cover`;
+      } else if (this.form.type === 'monster') {
+        let u = this.baseImage(`/${cp}-${this.form.cardType}.png`);
+        background = `url(${u}) no-repeat center/cover`;
+      } else if (this.form.type === 'pendulum') {
+        let u = this.baseImage(`/${cp}-${this.form.pendulumType}.png`);
+        background = `url(${u}) no-repeat center/cover`;
+      } else {
+        let u = this.baseImage(`/${cp}-${this.form.type}.png`);
+        background = `url(${u}) no-repeat center/cover`;
+      }
+      return {
+        transform: `scale(${this.form.scale})`,
+        background: background,
+        borderRadius: this.form.radius ? '24px' : '',
+        marginRight: `${(this.form.scale - 1) * 1393}px`,
+        marginBottom: `${(this.form.scale - 1) * 2031}px`,
+        '--descriptionZoom': this.form.descriptionZoom
+      };
+    },
+    attributeSrc() {
+      let suffix = '';
+      if (this.form.language === 'jp') {
+        suffix = '-jp';
+      } else if (this.form.language === 'kr') {
+        suffix = '-kr';
+      } else if (this.form.language === 'en') {
+        suffix = '-en';
+      }
+      if (['monster', 'pendulum'].includes(this.form.type)) {
+        let u = this.baseImage(`/attribute-${this.form.attribute}${suffix}.png`);
+        return u;
+      } else {
+        let u = this.baseImage(`/attribute-${this.form.type}${suffix}.png`);
+        return u;
+      }
+    },
+    spellTrapName() {
+      let name = '';
+      if (this.form.language === 'sc') {
+        if (this.form.type === 'spell') {
+          name = '魔法卡';
+        } else if (this.form.type === 'trap') {
+          name = '陷阱卡';
+        }
+      } else if (this.form.language === 'tc') {
+        if (this.form.type === 'spell') {
+          name = '魔法卡';
+        } else if (this.form.type === 'trap') {
+          name = '陷阱卡';
+        }
+      } else if (this.form.language === 'jp') {
+        if (this.form.type === 'spell') {
+          name = '[魔(ま)][法(ほう)]カード';
+        } else if (this.form.type === 'trap') {
+          name = '[罠(トラップ)]カード';
+        }
+      } else if (this.form.language === 'en') {
+        if (this.form.type === 'spell') {
+          name = 'Spell Card';
+        } else if (this.form.type === 'trap') {
+          name = 'Trap Card';
+        }
+      } else if (this.form.language === 'or') {
+        if (this.form.type === 'spell') {
+          name = 'fundsthc';
+        } else if (this.form.type === 'trap') {
+          name = 'fundgrun';
+        }
+      } else if (this.form.language === 'kr') {
+        if (this.form.type === 'spell') {
+          name = '마법 카드';
+        } else if (this.form.type === 'trap') {
+          name = '함정 카드';
+        }
+      }
+      return name;
+    },
+    spellTrapLinkName() {
+      let name = '';
+      if (this.form.language === 'sc') {
+        name = '链接';
+      } else if (this.form.language === 'tc') {
+        name = '鏈接';
+      } else if (this.form.language === 'jp' || this.form.language === 'as') {
+        name = 'リンク';
+      } else if (this.form.language === 'en') {
+        name = 'Link';
+      } else if (this.form.language === 'or') {
+        name = 'LINK';
+      } else if (this.form.language === 'kr') {
+        name = '링크';
+      }
+      return name;
     },
     showLevel() {
       let flag = false;
@@ -558,14 +799,152 @@ export default {
       }
       return flag;
     },
-    imageStyle() {
+    levelStyle() {
+      let right;
+      if (this.form.level < 13) {
+        right = '146px'
+      } else {
+        right = '100px'
+      }
       return {
-        position: 'absolute',
-        top: '2px',
-        width: '28px',
-        height: '28px'
+        right: right
+      }
+    },
+    rankStyle() {
+      let left;
+      if (this.form.rank < 13) {
+        left = '147px'
+      } else {
+        left = '100px'
+      }
+      return {
+        left: left
+      }
+    },
+    minusLevelStyle() {
+      let left;
+      if (this.form.level < 13) {
+        left = '147px';
+      } else {
+        left = '100px';
+      }
+      return {
+        left: left
+      }
+    },
+    imageStyle() {
+      let left, top, width, height;
+      if (this.form.type === 'pendulum') {
+        left = '94px';
+        top = '365px';
+        width = '1206px';
+        height = this.form.scalePendulumImage ? '894px' : '1204px';
+      } else {
+        left = '171px';
+        top = '373px';
+        width = '1053px';
+        height = '1053px';
+      }
+      return {
+        left: left,
+        top: top,
+        width: width,
+        height: height
       };
     },
+    maskStyle() {
+      let left, top;
+      if (this.form.type === 'pendulum') {
+        left = '81px';
+        top = '1254px';
+      } else {
+        left = '168px';
+        top = '373px';
+      }
+      return {
+        left: left,
+        top: top
+      };
+    },
+    packageStyle() {
+      let top, left, right;
+      if (this.form.type === 'pendulum') {
+        top = '1854px';
+        left = '116px';
+      } else if (this.form.type === 'monster' && this.form.cardType === 'link') {
+        top = '1455px';
+        right = '252px';
+      } else if ((this.form.type === 'spell' || this.form.type === 'trap') && this.form.icon.startsWith('link-')) {
+        top = '1455px';
+        right = '252px';
+      } else {
+        top = '1455px';
+        right = '148px';
+      }
+      return {
+        color: this.form.type === 'monster' && (this.form.cardType === 'xyz') ? 'white' : 'black',
+        top: top,
+        left: left,
+        right: right
+      };
+    },
+    descriptionStyle() {
+      let fontFamily;
+      if (this.form.language === 'en') {
+        if ((this.form.type === 'monster' && this.form.cardType === 'normal') || (this.form.type === 'pendulum' && this.form.pendulumType === 'normal-pendulum')) {
+          fontFamily = 'ygo-en-italic';
+        }
+      }
+      return {
+        fontFamily: fontFamily
+      };
+    },
+    passwordStyle() {
+      return {
+        color: this.form.type === 'monster' && this.form.cardType === 'xyz' ? 'white' : 'black'
+      };
+    },
+    monsterType() {
+      const leftBracket = ['en', 'kr'].includes(this.form.language) ? '[' : '【';
+      const rightBracket = ['en', 'kr'].includes(this.form.language) ? ']' : '】';
+      return `${leftBracket}${this.form.monsterType}${rightBracket}`;
+    },
+    copyrightSrc() {
+      let color = this.form.type === 'monster' && this.form.cardType === 'xyz' ? 'white' : 'black';
+      return this.baseImage(`/copyright-${this.form.copyright}-${color}.svg`);
+    },
+    cardName() {
+      return this.form.name.replace(/\[(.*?)\(.*?\)]/g, '$1');
+    }
+  },
+  directives: {
+    nameColor(el, binding) {
+      let that = binding.instance;
+      // 文本和注音颜色分开控制
+      let color = 'black';
+      // 自动颜色
+      if ((that.form.type === 'monster' && ['xyz', 'link', 'darksync'].includes(that.form.cardType)) || ['spell', 'trap'].includes(that.form.type) ||
+          (that.form.type === 'pendulum' && ['xyz-pendulum', 'link-pendulum', 'darksync-pendulum'].includes(that.form.pendulumType))) {
+        color = 'white';
+      }
+      el.style.color = binding.value || color;
+      let rtList = el.querySelectorAll('.rt');
+      rtList.forEach(rt => {
+        rt.style.color = color;
+      });
+    },
+    ydkNameColor(el, binding) {
+      let that = binding.instance;
+      let color = 'black';
+      if (binding.value.startsWith('!NOTFOUND!')) {
+        color = 'red';
+      }
+      el.style.color = color;
+    },
+    cardDescription(el, binding) {
+      let that = binding.instance;
+      that.getLastDescriptionHeight();
+    }
   },
   watch: {
     'form.package'() {
@@ -582,14 +961,74 @@ export default {
     // 图片转base64
     'form.image'() {
       if (this.form.image && !this.form.image.startsWith('data:image')) {
-        loadImage(this.form.image, {
-          canvas: true,
-          top: 0,
-          aspectRatio: 1,
-          crossOrigin: 'Anonymous'
-        }).then(data => {
-          this.form.image = data.image.toDataURL('image/png', 1);
-        });
+        let im = new Image()
+        im.src = this.form.image;
+        im.onload = (e) => {
+          let ratio = 1.0;
+          this.form.scalePendulumImage = false;
+          if (this.form.type === 'pendulum') {
+            if (im.width / im.height > 1.2) {
+              ratio = 89/66;
+              this.form.scalePendulumImage = true;
+            }
+          }
+          loadImage(this.form.image, {
+            canvas: true,
+            top: 0,
+            aspectRatio: ratio /* 1 */,
+            crossOrigin: 'Anonymous'
+          }).then(data => {
+            this.form.image = data.image.toDataURL('image/png', 1);
+            let count = 1;
+            for (let i = 0; i < this.ydkData.length; i++) {
+              if (parseInt(this.ydkData[i].id) === parseInt(this.form.password)) {
+                count = this.ydkData[i].count;
+                break;
+              }
+            }
+            setTimeout(() => {
+              if (this.batchExporting) {
+                // 如果正在批量导出，就导出卡图
+                let element = document.querySelector('.yugioh-card');
+                html2canvas(element, {
+                  useCORS: true,
+                  backgroundColor: 'transparent',
+                  width: this.form.scale * 1393,
+                  height: this.form.scale * 2031,
+                }).then(canvas => {
+                  let dataURL = canvas.toDataURL('image/png', 1);
+                  try {
+                    ipcRenderer.send('export-image', {path: this.exportDirectory, name: this.cardName, b64: dataURL, id: this.form.password, count: count});
+                  } catch (e) {
+                  }
+                }).finally(() => {
+                  this.exportLoading = false;
+                });
+              }
+            }, 3000);
+          });
+        };
+      }
+    },
+    'printMode'() {
+      if (this.printMode) {
+        this.form.flash0 = false;
+        this.form.flash1 = false;
+        this.form.flash2 = 0;
+        this.form.laser = false;
+        this.form.radius = false;
+      }
+    },
+    'useKK'() {
+      this.parseYugiohCard(this.currentCardData, this.form.language, this.useKK).then(cardInfo => {
+        Object.assign(this.form, cardInfo);
+      });
+    },
+    'kanaServer'() {
+      if (this.kanaServer) {
+        this.setGlobalServer('http://yugioh.vip:9800/api');
+      } else {
+        this.setGlobalServer('http://rarnu.xyz:9800/api');
       }
     }
   }
@@ -603,6 +1042,7 @@ export default {
 @import "./en/en";
 @import "./as/as";
 @import "./or/or";
+@import "./kr/kr";
 
 .yugioh-container {
 
@@ -622,14 +1062,14 @@ export default {
       position: absolute;
       left: 116px;
       width: 1030px;
-      max-height: 130px;
+      //max-height: 130px;
 
-      ::v-deep(.ruby) {
-        .rt {
-          font-size: 18px;
-          top: 3px;
-        }
-      }
+      //::v-deep(.ruby) {
+      //  .rt {
+      //    font-size: 18px;
+      //    top: 3px;
+      //  }
+      //}
     }
 
     .card-attribute {
@@ -661,12 +1101,12 @@ export default {
       display: flex;
       align-items: center;
 
-      ::v-deep(.ruby) {
-        .rt {
-          font-size: 18px;
-          top: -2px;
-        }
-      }
+      //::v-deep(.ruby) {
+      //  .rt {
+      //    font-size: 18px;
+      //    top: -2px;
+      //  }
+      //}
 
       .el-image {
         display: flex;
@@ -679,12 +1119,12 @@ export default {
       display: flex;
       align-items: center;
 
-      ::v-deep(.ruby) {
-        .rt {
-          font-size: 18px;
-          top: -2px;
-        }
-      }
+      //::v-deep(.ruby) {
+      //  .rt {
+      //    font-size: 18px;
+      //    top: -2px;
+      //  }
+      //}
 
       .el-image {
         display: flex;
@@ -747,12 +1187,12 @@ export default {
       text-align: justify;
       z-index: 20;
 
-      ::v-deep(.ruby) {
-        .rt {
-          font-size: 12px;
-          top: -5px;
-        }
-      }
+      //::v-deep(.ruby) {
+      //  .rt {
+      //    font-size: 12px;
+      //    top: -5px;
+      //  }
+      //}
     }
 
     .card-package {
@@ -779,22 +1219,22 @@ export default {
       .card-effect {
         white-space: nowrap;
 
-        ::v-deep(.ruby) {
-          .rt {
-            font-size: 14px;
-            top: -3px;
-          }
-        }
+        //::v-deep(.ruby) {
+        //  .rt {
+        //    font-size: 14px;
+        //    top: -3px;
+        //  }
+        //}
       }
 
-      .description-info {
-        ::v-deep(.ruby) {
-          .rt {
-            font-size: 12px;
-            top: -5px;
-          }
-        }
-      }
+      //.description-info {
+      //  ::v-deep(.ruby) {
+      //    .rt {
+      //      font-size: 12px;
+      //      top: -5px;
+      //    }
+      //  }
+      //}
     }
 
     .atk-def-link {
@@ -814,6 +1254,26 @@ export default {
       z-index: 20;
     }
 
+    .atk10000 {
+      position: absolute;
+      right: -2px;
+      top: 3px;
+      font-family: ygo-atk-def, serif;
+      font-size: 54px;
+      letter-spacing: 0;
+      z-index: 20;
+    }
+
+    .atk100000 {
+      position: absolute;
+      right: -10px;
+      top: 6px;
+      font-family: ygo-atk-def, serif;
+      font-size: 48px;
+      letter-spacing: 0;
+      z-index: 20;
+    }
+
     .card-atk-infinate {
       position: absolute;
       right: 48px;
@@ -822,7 +1282,6 @@ export default {
       font-size: 61px;
     }
 
-
     .card-def {
       position: absolute;
       right: 124px;
@@ -830,6 +1289,26 @@ export default {
       font-family: ygo-atk-def, serif;
       font-size: 61px;
       letter-spacing: 2px;
+      z-index: 20;
+    }
+
+    .def10000 {
+      position: absolute;
+      right: -2px;
+      top: 3px;
+      font-family: ygo-atk-def, serif;
+      font-size: 54px;
+      letter-spacing: 0;
+      z-index: 20;
+    }
+
+    .def100000 {
+      position: absolute;
+      right: -10px;
+      top: 6px;
+      font-family: ygo-atk-def, serif;
+      font-size: 48px;
+      letter-spacing: 0;
       z-index: 20;
     }
 

@@ -3,8 +3,15 @@
 
     .card-name {
         top: 95px;
-        font-size: 108.01px;
+        font-size: 108px;
         letter-spacing: -2px;
+
+        ::v-deep(.ruby) {
+            .rt {
+                font-size: 18px;
+                top: 3px;
+            }
+        }
     }
 
     .spell-trap {
@@ -12,6 +19,13 @@
         font-size: 80px;
         right: 130px;
         letter-spacing: -2px;
+
+        ::v-deep(.ruby) {
+            .rt {
+                font-size: 18px;
+                top: -2px;
+            }
+        }
 
         .spell-trap-icon {
             margin-top: 10px;
@@ -31,25 +45,46 @@
 
     .pendulum-description {
         top: 1286px;
-        font-size: 36px;
+        font-size: calc(36px * var(--descriptionZoom));
         line-height: 1.18;
         letter-spacing: -2px;
+
+        ::v-deep(.ruby) {
+            .rt {
+                font-size: calc(12px * var(--descriptionZoom));
+                top: calc(-5px * var(--descriptionZoom));
+            }
+        }
     }
 
     .card-description {
         top: 1525px;
-        font-size: 38px;
+        font-size: calc(38px * var(--descriptionZoom));
         line-height: 1.18;
 
         .card-effect {
-            font-size: 46px;
+            font-size: calc(46px * var(--descriptionZoom));
             text-indent: -0.2em;
             margin-bottom: -16px;
+
+            ::v-deep(.ruby) {
+                .rt {
+                    font-size: calc(14px * var(--descriptionZoom));
+                    top: calc(-3px * var(--descriptionZoom));
+                }
+            }
         }
 
         .description-info {
             margin-top: 16px;
             letter-spacing: -2px;
+            ::v-deep(.ruby) {
+                .rt {
+                    font-size: calc(12px * var(--descriptionZoom));
+                    top: calc(-5px * var(--descriptionZoom));
+                }
+            }
+
         }
     }
 }

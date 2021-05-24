@@ -2,31 +2,24 @@ package com.rarnu.diy.mobile
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.webkit.WebView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import com.pakdata.xwalk.refactor.XWalkSettings
-import com.pakdata.xwalk.refactor.XWalkView
+import com.rarnu.diy.mobile.base.BaseActivity
 import com.rarnu.diy.mobile.common.CardData
 import com.rarnu.diy.mobile.databinding.ActivityMainBinding
 import com.rarnu.diy.mobile.js.DIYJsBridge
-import com.rarnu.diy.mobile.js.XUIClient
 import com.rarnu.diy.mobile.server.PreviewServer
-import com.rarnu.diy.mobile.util.FileUtil
-import com.rarnu.diy.mobile.util.ShareUtil
-import com.rarnu.diy.mobile.util.globalFileUtil
+import com.rarnu.diy.mobile.util.*
 import org.json.JSONObject
-import org.xwalk.core.XWalkInitializer
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
 
-class MainActivity : AppCompatActivity(), XWalkInitializer.XWalkInitListener {
+class MainActivity : BaseActivity() {
 
     companion object {
         private const val MENU_ID_PREVIEW = Menu.FIRST + 1
@@ -34,9 +27,7 @@ class MainActivity : AppCompatActivity(), XWalkInitializer.XWalkInitListener {
     }
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var xView: XWalkView
-    private lateinit var xInitializer: XWalkInitializer
-    private lateinit var xSettings: XWalkSettings
+    private lateinit var xView: WebView
 
     private lateinit var server: PreviewServer
     private var cardData = CardData()
@@ -44,27 +35,21 @@ class MainActivity : AppCompatActivity(), XWalkInitializer.XWalkInitListener {
 
     private var initCompleted = false
 
+    @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         ImageUtil.register(this)
         globalFileUtil = FileUtil(this)
-        xInitializer = XWalkInitializer(this, this)
-        xInitializer.initAsync()
-    }
-
-    @SuppressLint("SetJavaScriptEnabled")
-    private fun initX() {
-        xView.setUIClient(XUIClient(xView) { })
-
-        with(xSettings) {
-            setAppCacheEnabled(true)
+        xView = binding.wvMain
+        with(xView.settings) {
             javaScriptEnabled = true
             allowContentAccess = true
             allowFileAccess = true
             domStorageEnabled = true
         }
+        initGlobal()
     }
 
     private fun initGlobal() {
@@ -115,7 +100,7 @@ class MainActivity : AppCompatActivity(), XWalkInitializer.XWalkInitListener {
             startActivity(Intent(this, EditKanaActivity::class.java))
         }
         xView.addJavascriptInterface(bridge, "diy")
-        xView.loadUrl("${BASE_URL}/dataview")
+        xView.loadUrl("$BASE_URL/dataview")
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -166,23 +151,5 @@ class MainActivity : AppCompatActivity(), XWalkInitializer.XWalkInitListener {
         if (this::server.isInitialized) {
             server.stop()
         }
-    }
-
-    override fun onXWalkInitStarted() {}
-
-    override fun onXWalkInitCancelled() {}
-
-    override fun onXWalkInitFailed() {}
-
-    override fun onXWalkInitCompleted() {
-        xView = XWalkView(this)
-        xView.isHorizontalScrollBarEnabled = false
-        xView.isVerticalScrollBarEnabled = false
-        xView.enableSwipeRefresh(false)
-        xSettings = xView.settings
-        initX()
-        xView.clearCache(true)
-        binding.layWebview.addView(xView)
-        initGlobal()
     }
 }

@@ -5,9 +5,10 @@
         tools:context=".PreviewActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <RelativeLayout
-            android:id="@+id/layPreview"
+    <WebView
+            android:id="@+id/wvPreview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-    />
+            android:scrollbars="none">
+    </WebView>
 </RelativeLayout>

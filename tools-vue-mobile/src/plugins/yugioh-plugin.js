@@ -5,6 +5,11 @@ const monsterTypeList = require('@/assets/json/monster-type-list.json');
 
 export default {
     install(app, options) {
+
+        // 接口请求地址配置
+        app.config.globalProperties.baseURL = 'http://yugioh.vip:9800/api';
+        // app.config.globalProperties.baseURL = 'http://0.0.0.0:9800/api';
+
         // 解析游戏王卡片
         app.config.globalProperties.parseYugiohCard = async function (data, lang, kk = true) {
             let card = {
@@ -23,7 +28,7 @@ export default {
                 atk: parseAtk(data),
                 def: parseDef(data),
                 arrowList: parseArrowList(data),
-                description: parseDescription(data),
+                description: parseDescription(data, lang),
                 firstLineCompress: parseFirstLineCompress(data),
                 package: parsePackage(data),
                 password: parsePassword(data)
@@ -43,7 +48,6 @@ export default {
                     card.pendulumDescription = vm.kanjiToKana(card.pendulumDescription)
                 }
                 card.monsterType = vm.kanjiToKana(card.monsterType);
-
                 let efkk = ((card.type === 'monster' && card.cardType === 'normal') || (card.type === 'pendulum' && card.pendulumType === 'normal-pendulum')) ? await vm.normalKanjiKanaAPI(card.description) : await vm.effectKanjiKanaAPI(card.description);
                 if (efkk) {
                     card.description = efkk;
@@ -69,12 +73,12 @@ export default {
         app.config.globalProperties.kanjiKanaAPI = async function (text = '') {
             if (text === '') return '';
             try {
-                let json = await vm.axios.post(vm.rarnuURL + '/search', {name: text});
+                let json = await vm.axios.post('/kanjikana/name', JSON.stringify({name: text}));
                 let d = json.data;
-                if (!d.found) {
+                if (!d.data) {
                     return null;
                 }
-                return d.kk;
+                return d.data;
             } catch (e) {
                 return null;
             }
@@ -83,12 +87,12 @@ export default {
         app.config.globalProperties.effectKanjiKanaAPI = async function (text = '') {
             if (text === '') return '';
             try {
-                let json = await vm.axios.post(vm.rarnuURL + '/effect', {name: text});
+                let json = await vm.axios.post('/kanjikana/effect', JSON.stringify({name: text}));
                 let d = json.data;
-                if (!d.found) {
+                if (!d.data) {
                     return null;
                 }
-                return d.kk;
+                return d.data;
             } catch (e) {
                 return null;
             }
@@ -97,16 +101,19 @@ export default {
         app.config.globalProperties.normalKanjiKanaAPI = async function (text = '') {
             if (text === '') return '';
             try {
-                let json = await vm.axios.post(vm.rarnuURL + '/normal', {name: text});
+                let json = await vm.axios.post( '/kanjikana/text', JSON.stringify({name: text}));
                 let d = json.data;
-                console.log(d);
-                if (!d.found) {
+                if (!d.data) {
                     return null;
                 }
-                return d.kk;
+                return d.data;
             } catch (e) {
                 return null;
             }
+        };
+
+        app.config.globalProperties.setGlobalServer = function (api = '') {
+            vm.baseURL = api;
         }
     }
 };
@@ -148,7 +155,12 @@ function numberToHalf(value) {
 }
 
 function parseName(data) {
-    return data.name;
+    // ユベル-Fullwidth wordwrap|ダス・エクストレーム・トラウリヒ・ドラッヘ}}
+    let n = data.name;
+    if(n.indexOf('Fullwidth wordwrap|') !== -1) {
+        n = n.replace('Fullwidth wordwrap|', '').replace('}}', '');
+    }
+    return n;
     // let name = characterToHalf(data.name);
     // 名字的数字要转半角
     // name = numberToHalf(name);
@@ -270,9 +282,13 @@ function parseLevelRank(data) {
     let number = parseInt(data.level.toString(16).substr(-1), 16);
     if (number <= 13) {
         let pass = parsePassword(data);
-        if (pass.trim() === '01686814' || pass.trim() === '90884403'    // 同调2
-            || pass.trim() === '65305468' || pass.trim() === '43490025' || pass.trim() === '26973555' || pass.trim() === '52653092' // 超量4
-        ) {
+        if (['01686814',  // 奥特玛雅·卓尔金
+            '90884403', // 究极幻神 奥特美特尔·比希巴尔金
+            '65305468', // 未来No.0 未来皇 霍普
+            '43490025', // 未来No.0 未来皇 霍普-未来斩
+            '26973555', // 未来No.0 未来龙皇 霍普
+            '52653092' // 闪光No.0 希望之异热同心
+        ].includes(pass.trim())) {
             return 0;
         }
         return number;
@@ -455,7 +471,7 @@ function parseArrowList(data) {
     return arrowList;
 }
 
-function parseDescription(data) {
+function parseDescription(data, lang) {
     let description = characterToHalf(data.desc);
     description = description.replace(/\r/g, '\n').replace(/\n\n/g, '\n');
     if (parseType(data) === 'pendulum') {
@@ -475,11 +491,35 @@ function parseDescription(data) {
                 return char;
             });
             description = charList.join('');
+            if (lang === 'sc' || lang === 'tc') {
+                let pass = parsePassword(data);
+                if (['01686814', // 奥特玛雅·卓尔金
+                    '90884403', // 究极幻神 奥特美特尔·比希巴尔金
+                    '58293343', // 暴君爆风龙
+                    '22804644', // 死亡病毒龙
+                    '84687358', // 反射镜力龙
+                    '44373896', // 破坏轮龙
+                    '83743222', // 女神的圣弓-矢月
+                    '10960419', // 时间魔术锤
+                    '19747827', // 真红眼黑龙剑
+                    '46354113' // 火箭赫谟炮
+                ].includes(pass.trim())) {
+                    description = description.replace(/\n/g, '');
+                }
+            }
         } else {
+            // 先去除换行
             if (description.indexOf('●') === -1) {
+                // 没有圆点，去除换行
                 description = description.replace(/\n/g, '');
             } else {
-                // 如果有点符号，不去除换行
+                if (lang === 'sc' || lang === 'tc') {
+                    description = description.replace(/\n/g, '');
+                    description = description.replace(/●/g, '\n●');
+                } else if (lang !== 'jp') {
+                    // 不是日文，去除换行
+                    description = description.replace(/\n/g, '');
+                }
             }
         }
     }

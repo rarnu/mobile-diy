@@ -4,11 +4,11 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
+import com.rarnu.diy.mobile.base.BaseActivity
 import com.rarnu.diy.mobile.databinding.ActivitySettingsBinding
 import com.rarnu.diy.mobile.util.globalFileUtil
 
-class SettingsActivity: AppCompatActivity() {
+class SettingsActivity: BaseActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
 

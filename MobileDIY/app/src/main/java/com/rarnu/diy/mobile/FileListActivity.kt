@@ -2,20 +2,16 @@ package com.rarnu.diy.mobile
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.SimpleAdapter
-import android.widget.SimpleCursorAdapter
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
+import com.rarnu.diy.mobile.base.BaseActivity
 import com.rarnu.diy.mobile.databinding.ActivityFilelistBinding
 import com.rarnu.diy.mobile.util.globalFileUtil
 import java.io.File
 
-class FileListActivity: AppCompatActivity() {
+class FileListActivity: BaseActivity() {
 
     private lateinit var binding: ActivityFilelistBinding
 

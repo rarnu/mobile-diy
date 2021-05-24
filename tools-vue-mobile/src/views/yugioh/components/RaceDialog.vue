@@ -1,6 +1,6 @@
 <template>
   <div class="race-dialog">
-    <el-dialog title="种族编辑" :modelValue="modelValue" width="80%" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
+    <el-dialog title="种族编辑" :modelValue="modelValue" width="380px" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
 
       <el-form ref="form" :model="form" label-width="auto" size="small">
         <el-form-item label="类型">

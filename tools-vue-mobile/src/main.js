@@ -32,11 +32,4 @@ app.use(router);
 app.use(store);
 const vm = app.mount('#app');
 
-// 接口请求地址配置
-
-// app.config.globalProperties.baseURL = 'https://tools.kooriookami.top/api';
-app.config.globalProperties.baseURL = 'http://rarnu.xyz:9987/api';
-app.config.globalProperties.rarnuURL = 'http://rarnu.xyz:9987/kk';
-// app.config.globalProperties.rarnuURL = 'http://127.0.0.1:9987/kk'
-
 export default vm;

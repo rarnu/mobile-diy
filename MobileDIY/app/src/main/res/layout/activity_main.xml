@@ -6,11 +6,12 @@
         tools:context=".MainActivity"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <RelativeLayout
-            android:id="@+id/layWebview"
+    <WebView
+            android:id="@+id/wvMain"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-    </RelativeLayout>
+            android:layout_height="match_parent"
+            android:scrollbars="none">
+    </WebView>
     <RelativeLayout
             android:id="@+id/layLoading"
             android:layout_width="match_parent"

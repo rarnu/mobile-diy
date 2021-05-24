@@ -3,26 +3,12 @@ package com.rarnu.diy.mobile.js
 import android.content.Context
 import android.util.Log
 import android.webkit.JavascriptInterface
-import com.pakdata.xwalk.refactor.XWalkUIClient
-import com.pakdata.xwalk.refactor.XWalkView
+import android.webkit.WebView
 import com.rarnu.diy.mobile.ImageUtil
 import com.rarnu.diy.mobile.common.CardData
-import com.rarnu.diy.mobile.runOnMainThread
+import com.rarnu.diy.mobile.util.runOnMainThread
 
-class XUIClient(view: XWalkView, val pageLoadCallback: () -> Unit) : XWalkUIClient(view) {
-
-    override fun onConsoleMessage(view: XWalkView, message: String?, lineNumber: Int, sourceId: String?, messageType: ConsoleMessageType?): Boolean {
-        Log.e("DIY", "console: $message")
-        return super.onConsoleMessage(view, message, lineNumber, sourceId, messageType)
-    }
-
-    override fun onPageLoadStopped(view: XWalkView, url: String?, status: LoadStatusInternal?) {
-        pageLoadCallback()
-        super.onPageLoadStopped(view, url, status)
-    }
-}
-
-class DIYJsBridge(private val ctx: Context, private val webview: XWalkView) {
+class DIYJsBridge(private val ctx: Context, private val webview: WebView) {
 
     var onInitCardData: () -> CardData = { CardData() }
     var onExportImage: (data: String) -> Unit = { }
@@ -77,7 +63,7 @@ class DIYJsBridge(private val ctx: Context, private val webview: XWalkView) {
         }
     }
 
-    /* 打开设置页 */
+    /* 打开分享页 */
     @JavascriptInterface
     fun openShareCard(cardName: String) {
         runOnMainThread { onOpenShareCard(cardName) }

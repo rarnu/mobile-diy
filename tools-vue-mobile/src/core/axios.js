@@ -11,6 +11,7 @@ axios.interceptors.request.use(config => {
     }
     return config;
 }, error => {
+    console.log('req error => ' + error);
     return Promise.reject(error);
 });
 // 响应拦截器
@@ -19,6 +20,7 @@ axios.interceptors.response.use(response => {
 }, error => {
     // 对响应错误做点什么
     let message = error.response?.data?.message ?? error.message;
+    console.log('resp err => ' + message);
     if (message !== '数据不存在') {
         ElNotification.error({
             title: '错误',

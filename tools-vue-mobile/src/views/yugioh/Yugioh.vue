@@ -5,7 +5,7 @@
         <div class="yugioh-card" :class="cardClass" :style="cardStyle" ondragstart="return false">
 
           <div class="card-name" v-name-color="form.color">
-            <CompressText :text="form.name" :fontLoading="fontLoading" :width="1030" :height="200" :specColor="form.redName" :language="form.language"></CompressText>
+            <CompressText :text="form.name" :refreshKey="refreshKey" :fontLoading="fontLoading" :width="1030" :height="200" :specColor="form.redName" :language="form.language" :limit="15"></CompressText>
           </div>
           <div class="card-attribute">
             <el-image :src="attributeSrc"></el-image>
@@ -24,17 +24,17 @@
           </div>
 
           <div class="spell-trap-link" v-if="['spell','trap'].includes(form.type) && form.icon.startsWith('link-')">
-            <span>{{ (form.language === 'as' || form.language === 'or') ? '' : form.language === 'en' ? '[' : '【' }}</span>
-            <CompressText :text="spellTrapLinkName" :fontLoading="fontLoading"></CompressText>
+            <span>{{ (form.language === 'as' || form.language === 'or') ? '' : ['en', 'kr'].includes(form.language) ? '[' : '【' }}</span>
+            <CompressText :text="spellTrapLinkName" :refreshKey="refreshKey" :fontLoading="fontLoading" :limit="8"></CompressText>
             <el-image class="spell-trap-icon" v-if="['link-filed', 'link-quick-play', 'link-equip', 'link-continuous', 'link-ritual', 'link-counter'].includes(form.icon)" :src="baseImage(`/icon-${form.icon.replace('link-', '')}.png`)"></el-image>
-            <span>{{ (form.language === 'as' || form.language === 'or') ? '' : form.language === 'en' ? ']' : '】' }}</span>
+            <span>{{ (form.language === 'as' || form.language === 'or') ? '' : ['en', 'kr'].includes(form.language) ? ']' : '】' }}</span>
           </div>
 
           <div class="spell-trap" v-if="['spell','trap'].includes(form.type) && !form.icon.startsWith('link-')">
-            <span>{{ (form.language === 'as' || form.language === 'or') ? '' : form.language === 'en' ? '[' : '【' }}</span>
-            <CompressText :text="spellTrapName" :fontLoading="fontLoading"></CompressText>
+            <span>{{ (form.language === 'as' || form.language === 'or') ? '' : ['en', 'kr'].includes(form.language) ? '[' : '【' }}</span>
+            <CompressText :text="spellTrapName" :refreshKey="refreshKey" :fontLoading="fontLoading" :limit="8"></CompressText>
             <el-image class="spell-trap-icon" v-if="['filed', 'quick-play', 'equip', 'continuous', 'ritual', 'counter'].includes(form.icon)" :src="baseImage(`/icon-${form.icon}.png`)"></el-image>
-            <span>{{ (form.language === 'as' || form.language === 'or') ? '' : form.language === 'en' ? ']' : '】' }}</span>
+            <span>{{ (form.language === 'as' || form.language === 'or') ? '' : ['en', 'kr'].includes(form.language) ? ']' : '】' }}</span>
           </div>
 
           <div class="card-image" v-if="form.image" :style="imageStyle">
@@ -68,8 +68,8 @@
           </div>
 
           <div class="pendulum-description" v-if="form.type==='pendulum'">
-            <CompressText :text="form.pendulumDescription" :width="950" :height="230" :fontLoading="fontLoading"
-                          :language="form.language" autoSizeElement=".pendulum-description"></CompressText>
+            <CompressText :text="form.pendulumDescription" :width="950" :height="230" :refreshKey="refreshKey" :fontLoading="fontLoading"
+                          :language="form.language" autoSizeElement=".pendulum-description" :limit="8"></CompressText>
           </div>
 
           <div class="card-package" :style="packageStyle">
@@ -109,15 +109,15 @@
           <div class="card-description" v-card-description>
             <div v-if="['monster','pendulum'].includes(form.type)" class="card-effect">
               <span>{{ (form.language === 'as' || form.language === 'or') ? '' : form.language === 'en' ? '[' : '【' }}</span>
-              <CompressText :text="form.monsterType" :fontLoading="fontLoading"></CompressText>
+              <CompressText :text="form.monsterType" :refreshKey="refreshKey" :fontLoading="fontLoading" :limit="8"></CompressText>
               <span>{{ (form.language === 'as' || form.language === 'or') ? '' : form.language === 'en' ? ']' : '】' }}</span>
             </div>
 
             <div class="description-info" :style="descriptionStyle">
-              <!-- 只有一行的情况，无论如何都压缩 -->
+              <!-- 只有一行的情况，无论如何都全文本压缩 -->
               <div v-if="form.description.split('\n').length === 1">
-                <CompressText :text="form.description" :width="1170" :height="300" :fontLoading="fontLoading"
-                              :language="form.language" autoSizeElement=".card-description"></CompressText>
+                <CompressText :text="form.description" :width="1170" :height="300" :refreshKey="refreshKey" :fontLoading="fontLoading"
+                              :language="form.language" autoSizeElement=".card-description" :limit="8"></CompressText>
               </div>
               <div v-else>
                 <template v-for="(item,index) in form.description.split('\n')">
@@ -125,27 +125,26 @@
                   <div v-if="index === 0">
                     <!-- 如果第一行压缩 -->
                     <div v-if="form.firstLineCompress">
-                      <CompressText :text="item" :width="1170" :height="70" :fontLoading="fontLoading"></CompressText>
+                      <CompressText :text="item" :width="1170" :height="70" :refreshKey="refreshKey" :fontLoading="fontLoading" :limit="8"></CompressText>
                     </div>
                     <!-- 否则按其他行一样处理 -->
                     <div v-else>
-                      <CompressText :text="item" :fontLoading="fontLoading"></CompressText>
+                      <CompressText :text="item" :refreshKey="refreshKey" :fontLoading="fontLoading" :limit="8"></CompressText>
                     </div>
                   </div>
                   <!--中间行不压缩-->
                   <div v-if="index > 0 && index < (form.description.split('\n').length - 1)">
-                    <CompressText :text="item" :fontLoading="fontLoading"></CompressText>
+                    <CompressText :text="item" :refreshKey="refreshKey" :fontLoading="fontLoading" :limit="8"></CompressText>
                   </div>
                   <!--最后一行压缩-->
                   <div v-if="index !== 0 && index === (form.description.split('\n').length - 1)" class="last-description">
-                    <CompressText :text="item" :width="1170" :height="lastDescriptionHeight" :fontLoading="fontLoading"
-                                  :language="form.language" autoSizeElement=".card-description"></CompressText>
+                    <CompressText :text="item" :width="1170" :height="lastDescriptionHeight" :refreshKey="refreshKey" :fontLoading="fontLoading"
+                                  :language="form.language" autoSizeElement=".card-description" :limit="8"></CompressText>
                   </div>
                   <!--item为空提供换行-->
                   <br v-if="!item">
                 </template>
               </div>
-
             </div>
           </div>
 
@@ -156,17 +155,17 @@
           </div>
 
           <div class="card-atk" v-if="['monster','pendulum'].includes(form.type)">
-            <span v-if="form.atk >= 10000">
-              <CompressText :text="`${form.atk}`" :width="400" :height="61"></CompressText>
-            </span>
-
-            <span v-if="form.atk >= 0 && form.atk <= 9999">{{ form.atk }}</span>
+            <span v-if="form.atk >= 100000 && form.atk <= 999999" class="atk100000">{{form.atk}}</span>
+            <span v-else-if="form.atk >= 10000 && form.atk <= 99999" class="atk10000">{{ form.atk }}</span>
+            <span v-else-if="form.atk >= 0 && form.atk <= 9999">{{ form.atk }}</span>
             <span v-else-if="form.atk === -1">?</span>
             <span v-else-if="form.atk === -2"><span class="card-atk-infinate"><b>∞</b></span></span>
           </div>
 
           <div class="card-def" v-if="(form.type==='monster'&&form.cardType!=='link')||(form.type==='pendulum' && form.pendulumType !== 'link-pendulum')">
-            <span v-if="form.def >= 0">{{ form.def }}</span>
+            <span v-if="form.def >= 100000 && form.def <= 999999" class="def100000">{{form.def}}</span>
+            <span v-else-if="form.def >= 10000 && form.def <= 99999" class="def10000">{{form.def}}</span>
+            <span v-else-if="form.def >= 0">{{ form.def }}</span>
             <span v-else-if="form.def === -1">?</span>
             <span v-else-if="form.atk === -2"><span class="card-def-infinate"><b>∞</b></span></span>
           </div>
@@ -195,14 +194,11 @@
             <el-image :src="baseImage('/flash_effect.png')"></el-image>
           </div>
 
-          <div class="card-flash-0">
+          <div class="card-flash-0" v-if="form.type !== 'pendulum'">
             <el-image :src="baseImage(`/flash_${form.flash2}.png`)"></el-image>
           </div>
-
         </div>
-
       </template>
-
     </Page>
   </div>
 </template>
@@ -210,6 +206,7 @@
 <script>
 import Page from '@/components/page/Page';
 import CompressText from '@/views/yugioh/components/CompressText';
+import RaceDialog from "@/views/yugioh/components/RaceDialog";
 import html2canvas from '@/assets/js/html2canvas';
 import loadImage from 'blueimp-load-image';
 import scDemo from './sc/sc-demo';
@@ -218,19 +215,30 @@ import jpDemo from './jp/jp-demo';
 import enDemo from './en/en-demo';
 import asDemo from './as/as-demo';
 import orDemo from './or/or-demo';
+import krDemo from './kr/kr-demo';
+import jpDataDemo from './jp/jp-data-demo';
+import sc2tc from "@/assets/js/sc2tc";
 
 export default {
 
   name: 'Yugioh',
   components: {
     Page,
-    CompressText
+    CompressText,
+    RaceDialog
   },
   data() {
     return {
+      refreshKey: 0,
+      aboutDialog: false,
       fontLoading: true,
       searchLoading: false,
       randomLoading: false,
+      exportLoading: false,
+      useKK: true,
+      kanaServer: true,
+      specialColor: false,
+      currentCardData: {},
       form: {
         language: 'jp',
         name: '',
@@ -256,45 +264,87 @@ export default {
         laser: false,
         radius: false,
         cardBack: false,
-        scale: 0.30,
+        scale: 1.0,
         firstLineCompress: false,
         flash0: false,
         flash1: false,
         flash2: 0,
-        redName: ''
+        redName: '',
+        scalePendulumImage: false,
+        descriptionZoom: 1
       },
-      lastDescriptionHeight: 300   // 最后一行效果压缩高度
+      lastDescriptionHeight: 300,   // 最后一行效果压缩高度
+      kanjiKanaDialog: false,
+      raceDialog: false,
+      effectDialog: false,
+      ydkData: [],           // 读入 YDK 时填充
+      printMode: false,      // 打印模式，将使用另一套卡模
+      batchExporting: false, // 正在批量导出
+      exportDirectory: ''    // 要导出的文件所在的目录
     };
   },
   created() {
     try {
       diy.initCard();
     } catch (e) {
+
     }
   },
   mounted() {
     window.assignCardData = this.assignCardData;
-    window.setScale = this.setScale;
     window.setScaleEx = this.setScaleEx;
     window.exportImage = this.exportImage;
-
     document.fonts.ready.then(() => {
       this.fontLoading = false;
+      this.refreshKey++;
     });
   },
   methods: {
-    setScale(w) {
-      this.form.scale = w * 1.0 / 1393;
+    setScaleEx(w) {
+      this.form.scale = w;
     },
-    setScaleEx(s) {
-      this.form.scale = s;
+    remoteKana() {
+      // 从远程服务器请求注音
+      this.kanjiKanaAPI(this.cardName).then(kk => {
+        if (kk) {
+          this.form.name = kk;
+        } else {
+          this.form.name = this.kanjiToKana(this.cardName);
+        }
+      });
+      if ((this.form.type === 'monster' && this.form.cardType === 'normal') || (this.form.type === 'pendulum' && this.form.pendulumType === 'normal-pendulum')) {
+        this.normalKanjiKanaAPI(this.form.description).then(kk => {
+          if (kk) {
+            this.form.description = kk;
+          } else {
+            this.form.description = this.kanjiToKana(this.form.description);
+          }
+        });
+      } else {
+        this.effectKanjiKanaAPI(this.form.description).then(kk => {
+          if (kk) {
+            this.form.description = kk;
+          } else {
+            this.form.description = this.kanjiToKana(this.form.description);
+          }
+        });
+      }
+      this.effectKanjiKanaAPI(this.form.pendulumDescription).then(kk => {
+        if (kk) {
+          this.form.pendulumDescription = kk;
+        } else {
+          this.form.pendulumDescription = this.kanjiToKana(this.form.pendulumDescription);
+        }
+      });
     },
     baseImage(path) {
       return require('@/assets/image' + path);
     },
+    newCard() {
+      Object.assign(this.form, jpDemo);
+    },
     assignCardData(data) {
       Object.assign(this.form, data);
-      this.refreshFont();
     },
     getRace(race) {
       // 从 Race 对话框回传过来的
@@ -306,6 +356,7 @@ export default {
         this.fontLoading = true;
         document.fonts.ready.then(() => {
           this.fontLoading = false;
+          this.refreshKey++;
         });
       });
     },
@@ -315,6 +366,7 @@ export default {
       } else if (value === 'tc') {
         Object.assign(this.form, tcDemo);
       } else if (value === 'jp') {
+        Object.assign(this.currentCardData, jpDataDemo);
         Object.assign(this.form, jpDemo);
       } else if (value === 'en') {
         Object.assign(this.form, enDemo);
@@ -322,6 +374,8 @@ export default {
         Object.assign(this.form, asDemo);
       } else if (value === 'or') {
         Object.assign(this.form, orDemo);
+      } else if (value === 'kr') {
+        Object.assign(this.form, krDemo);
       }
       this.refreshFont();
     },
@@ -342,6 +396,23 @@ export default {
     },
     deleteImage() {
       this.form.image = '';
+    },
+    inputPendulumDescription() {
+      // 不保留换行符号
+      if (this.form.pendulumDescription.includes('\n')) {
+        this.$message.warning('不允许换行符');
+        this.form.pendulumDescription = this.form.pendulumDescription.replace('\n', '');
+      }
+    },
+    changeDescriptionZoom() {
+      this.refreshKey++;
+    },
+    toggleArrow(item) {
+      if (this.form.arrowList.includes(item)) {
+        this.form.arrowList = this.form.arrowList.filter(value => value !== item);
+      } else {
+        this.form.arrowList.push(item);
+      }
     },
     arrowItemStyle(item) {
       let border = '';
@@ -369,29 +440,113 @@ export default {
         this.lastDescriptionHeight = 0;
       }
     },
-    parseData(data) {
-      let cardInfo = this.parseYugiohCard(data, this.form.language);
-      Object.assign(this.form, cardInfo);
+    fetchCardName(value, callback) {
+      if (value) {
+        this.axios({
+          method: 'get',
+          url: '/yugioh/list',
+          params: {
+            name: this.cardName,
+            lang: this.form.language
+          }
+        }).then(res => {
+          let data = res.data.data;
+          data.forEach(value => {
+            value.value = `${value.name}（${value.id}）`;
+          });
+          callback(data);
+        });
+      }
+      callback([]);
     },
-    searchByPassword(p) {
-      this.form.password = p;
+    selectCardName(value) {
+      this.form.name = value.name;
+      this.form.password = `${value.id}`;
       this.searchCardByPassword();
+    },
+    async parseData(data) {
+      Object.assign(this.currentCardData, data);
+      let cardInfo = await this.parseYugiohCard(data, this.form.language, this.useKK);
+      Object.assign(this.form, cardInfo);
     },
     searchCardByPassword() {
       this.searchLoading = true;
-      this.axios({
+      this.form.password = this.form.password.trim();
+      if (this.form.language === 'tc') {
+        this.axios.get(`/yugioh/card/${this.form.password}?lang=tc`)
+            .then(res => {
+              this.parseData(res.data.data);
+            })
+            .catch(res => {
+              // 繁中取不到的情况，取简中来翻译
+              this.axios.get(`/yugioh/card/${this.form.password}?lang=sc`)
+                  .then(res1 => {
+                    let resConv = {};
+                    Object.assign(resConv, res1.data.data);
+                    resConv.name = sc2tc.simple2Traditional(res1.data.data.name);
+                    resConv.desc = sc2tc.simple2Traditional(res1.data.data.desc);
+                    this.parseData(resConv);
+                  });
+            }).finally(() => {
+          this.searchLoading = false;
+        });
+      } else {
+        this.axios({
+          method: 'get',
+          url: '/yugioh/card/' + this.form.password,
+          params: {
+            lang: this.form.language
+          }
+        }).then(res => {
+          this.parseData(res.data.data);
+        }).finally(() => {
+          this.searchLoading = false;
+        });
+      }
+    },
+    randomPassword() {
+      let rand = '';
+      for (let i = 0; i < 8; i++) {
+        rand += Math.floor(Math.random() * 10);
+      }
+      this.form.password = rand;
+    },
+    async getRandomCard() {
+      this.randomLoading = true;
+      let res = await this.axios({
         method: 'get',
-        url: '/yugioh/card/' + this.form.password,
+        url: '/yugioh/random',
         params: {
           lang: this.form.language
         }
-      }).then(res => {
-        this.parseData(res.data.data);
-      }).finally(() => {
-        this.searchLoading = false;
       });
+      Object.assign(this.currentCardData, res.data.data);
+      let cardInfo = await this.parseYugiohCard(res.data.data, this.form.language, this.useKK);
+      Object.assign(this.form, cardInfo);
+      this.randomLoading = false;
+    },
+    importJson(file) {
+      let reader = new FileReader();
+      reader.readAsText(file);
+      reader.onload = (e => {
+        try {
+          let data = JSON.parse(e.target?.result);
+          this.form = Object.assign(this.form, data);
+          // 字体可能加载
+          this.refreshFont();
+        } catch (e) {
+          this.$message.error('数据导入失败');
+        }
+      });
+      return false;
+    },
+    exportJson() {
+      let data = JSON.stringify(this.form);
+      let blob = new Blob([data], {type: 'application/json'});
+      this.downloadBlob(blob, this.cardName);
     },
     exportImage() {
+      this.exportLoading = true;
       let element = document.querySelector('.yugioh-card');
       html2canvas(element, {
         useCORS: true,
@@ -400,7 +555,15 @@ export default {
         height: this.form.scale * 2031,
       }).then(canvas => {
         let dataURL = canvas.toDataURL('image/png', 1);
-        diy.receiveImageData(dataURL);
+        try {
+          diy.receiveImageData(dataURL);
+        } catch (e) {
+
+        }
+        // let blob = this.dataURLtoBlob(dataURL);
+        // this.downloadBlob(blob, this.cardName);
+      }).finally(() => {
+        this.exportLoading = false;
       });
     }
   },
@@ -410,7 +573,24 @@ export default {
     },
     cardStyle() {
       let background;
-      let cp = 'card';
+      let cp = this.printMode ? 'pcard' : 'card';
+      if (this.form.type === 'pendulum') {
+        if (this.form.pendulumType === 'normal-pendulum' || this.form.pendulumType === 'effect-pendulum') {
+          if (this.specialColor) {
+            cp = 'scard';
+          }
+        }
+      } else if (this.form.type === 'monster') {
+        if (this.form.cardType !== 'darksync') {
+          if (this.specialColor) {
+            cp = 'scard';
+          }
+        }
+      } else if (this.form.type === 'spell' || this.form.type === 'trap') {
+        if (this.specialColor) {
+          cp = 'scard';
+        }
+      }
       if (this.form.cardBack) {
         let u = this.baseImage('/card-back.png');
         background = `url(${u}) no-repeat center/cover`;
@@ -429,20 +609,25 @@ export default {
         background: background,
         borderRadius: this.form.radius ? '24px' : '',
         marginRight: `${(this.form.scale - 1) * 1393}px`,
-        marginBottom: `${(this.form.scale - 1) * 2031}px`
+        marginBottom: `${(this.form.scale - 1) * 2031}px`,
+        '--descriptionZoom': this.form.descriptionZoom
       };
     },
     attributeSrc() {
       let suffix = '';
       if (this.form.language === 'jp') {
         suffix = '-jp';
+      } else if (this.form.language === 'kr') {
+        suffix = '-kr';
       } else if (this.form.language === 'en') {
         suffix = '-en';
       }
       if (['monster', 'pendulum'].includes(this.form.type)) {
-        return this.baseImage(`/attribute-${this.form.attribute}${suffix}.png`);
+        let u = this.baseImage(`/attribute-${this.form.attribute}${suffix}.png`);
+        return u;
       } else {
-        return this.baseImage(`/attribute-${this.form.type}${suffix}.png`);
+        let u = this.baseImage(`/attribute-${this.form.type}${suffix}.png`);
+        return u;
       }
     },
     spellTrapName() {
@@ -477,6 +662,12 @@ export default {
         } else if (this.form.type === 'trap') {
           name = 'fundgrun';
         }
+      } else if (this.form.language === 'kr') {
+        if (this.form.type === 'spell') {
+          name = '마법 카드';
+        } else if (this.form.type === 'trap') {
+          name = '함정 카드';
+        }
       }
       return name;
     },
@@ -492,6 +683,8 @@ export default {
         name = 'Link';
       } else if (this.form.language === 'or') {
         name = 'LINK';
+      } else if (this.form.language === 'kr') {
+        name = '링크';
       }
       return name;
     },
@@ -561,7 +754,7 @@ export default {
         left = '94px';
         top = '365px';
         width = '1206px';
-        height = '1204px';
+        height = this.form.scalePendulumImage ? '894px' : '1204px';
       } else {
         left = '171px';
         top = '373px';
@@ -627,6 +820,11 @@ export default {
         color: this.form.type === 'monster' && this.form.cardType === 'xyz' ? 'white' : 'black'
       };
     },
+    monsterType() {
+      const leftBracket = ['en', 'kr'].includes(this.form.language) ? '[' : '【';
+      const rightBracket = ['en', 'kr'].includes(this.form.language) ? ']' : '】';
+      return `${leftBracket}${this.form.monsterType}${rightBracket}`;
+    },
     copyrightSrc() {
       let color = this.form.type === 'monster' && this.form.cardType === 'xyz' ? 'white' : 'black';
       return this.baseImage(`/copyright-${this.form.copyright}-${color}.svg`);
@@ -651,6 +849,14 @@ export default {
         rt.style.color = color;
       });
     },
+    ydkNameColor(el, binding) {
+      let that = binding.instance;
+      let color = 'black';
+      if (binding.value.startsWith('!NOTFOUND!')) {
+        color = 'red';
+      }
+      el.style.color = color;
+    },
     cardDescription(el, binding) {
       let that = binding.instance;
       that.getLastDescriptionHeight();
@@ -671,14 +877,74 @@ export default {
     // 图片转base64
     'form.image'() {
       if (this.form.image && !this.form.image.startsWith('data:image')) {
-        loadImage(this.form.image, {
-          canvas: true,
-          top: 0,
-          aspectRatio: 1,
-          crossOrigin: 'Anonymous'
-        }).then(data => {
-          this.form.image = data.image.toDataURL('image/png', 1);
-        });
+        let im = new Image()
+        im.src = this.form.image;
+        im.onload = (e) => {
+          let ratio = 1.0;
+          this.form.scalePendulumImage = false;
+          if (this.form.type === 'pendulum') {
+            if (im.width / im.height > 1.2) {
+              ratio = 89/66;
+              this.form.scalePendulumImage = true;
+            }
+          }
+          loadImage(this.form.image, {
+            canvas: true,
+            top: 0,
+            aspectRatio: ratio /* 1 */,
+            crossOrigin: 'Anonymous'
+          }).then(data => {
+            this.form.image = data.image.toDataURL('image/png', 1);
+            let count = 1;
+            for (let i = 0; i < this.ydkData.length; i++) {
+              if (parseInt(this.ydkData[i].id) === parseInt(this.form.password)) {
+                count = this.ydkData[i].count;
+                break;
+              }
+            }
+            setTimeout(() => {
+              if (this.batchExporting) {
+                // 如果正在批量导出，就导出卡图
+                let element = document.querySelector('.yugioh-card');
+                html2canvas(element, {
+                  useCORS: true,
+                  backgroundColor: 'transparent',
+                  width: this.form.scale * 1393,
+                  height: this.form.scale * 2031,
+                }).then(canvas => {
+                  let dataURL = canvas.toDataURL('image/png', 1);
+                  try {
+                    ipcRenderer.send('export-image', {path: this.exportDirectory, name: this.cardName, b64: dataURL, id: this.form.password, count: count});
+                  } catch (e) {
+                  }
+                }).finally(() => {
+                  this.exportLoading = false;
+                });
+              }
+            }, 3000);
+          });
+        };
+      }
+    },
+    'printMode'() {
+      if (this.printMode) {
+        this.form.flash0 = false;
+        this.form.flash1 = false;
+        this.form.flash2 = 0;
+        this.form.laser = false;
+        this.form.radius = false;
+      }
+    },
+    'useKK'() {
+      this.parseYugiohCard(this.currentCardData, this.form.language, this.useKK).then(cardInfo => {
+        Object.assign(this.form, cardInfo);
+      });
+    },
+    'kanaServer'() {
+      if (this.kanaServer) {
+        this.setGlobalServer('http://yugioh.vip:9800/api');
+      } else {
+        this.setGlobalServer('http://rarnu.xyz:9800/api');
       }
     }
   }
@@ -692,6 +958,7 @@ export default {
 @import "./en/en";
 @import "./as/as";
 @import "./or/or";
+@import "./kr/kr";
 
 .yugioh-container {
 
@@ -711,14 +978,14 @@ export default {
       position: absolute;
       left: 116px;
       width: 1030px;
-      max-height: 130px;
+      //max-height: 130px;
 
-      ::v-deep(.ruby) {
-        .rt {
-          font-size: 18px;
-          top: 3px;
-        }
-      }
+      //::v-deep(.ruby) {
+      //  .rt {
+      //    font-size: 18px;
+      //    top: 3px;
+      //  }
+      //}
     }
 
     .card-attribute {
@@ -750,12 +1017,12 @@ export default {
       display: flex;
       align-items: center;
 
-      ::v-deep(.ruby) {
-        .rt {
-          font-size: 18px;
-          top: -2px;
-        }
-      }
+      //::v-deep(.ruby) {
+      //  .rt {
+      //    font-size: 18px;
+      //    top: -2px;
+      //  }
+      //}
 
       .el-image {
         display: flex;
@@ -768,12 +1035,12 @@ export default {
       display: flex;
       align-items: center;
 
-      ::v-deep(.ruby) {
-        .rt {
-          font-size: 18px;
-          top: -2px;
-        }
-      }
+      //::v-deep(.ruby) {
+      //  .rt {
+      //    font-size: 18px;
+      //    top: -2px;
+      //  }
+      //}
 
       .el-image {
         display: flex;
@@ -836,12 +1103,12 @@ export default {
       text-align: justify;
       z-index: 20;
 
-      ::v-deep(.ruby) {
-        .rt {
-          font-size: 12px;
-          top: -5px;
-        }
-      }
+      //::v-deep(.ruby) {
+      //  .rt {
+      //    font-size: 12px;
+      //    top: -5px;
+      //  }
+      //}
     }
 
     .card-package {
@@ -868,22 +1135,22 @@ export default {
       .card-effect {
         white-space: nowrap;
 
-        ::v-deep(.ruby) {
-          .rt {
-            font-size: 14px;
-            top: -3px;
-          }
-        }
+        //::v-deep(.ruby) {
+        //  .rt {
+        //    font-size: 14px;
+        //    top: -3px;
+        //  }
+        //}
       }
 
-      .description-info {
-        ::v-deep(.ruby) {
-          .rt {
-            font-size: 12px;
-            top: -5px;
-          }
-        }
-      }
+      //.description-info {
+      //  ::v-deep(.ruby) {
+      //    .rt {
+      //      font-size: 12px;
+      //      top: -5px;
+      //    }
+      //  }
+      //}
     }
 
     .atk-def-link {
@@ -903,6 +1170,26 @@ export default {
       z-index: 20;
     }
 
+    .atk10000 {
+      position: absolute;
+      right: -2px;
+      top: 3px;
+      font-family: ygo-atk-def, serif;
+      font-size: 54px;
+      letter-spacing: 0;
+      z-index: 20;
+    }
+
+    .atk100000 {
+      position: absolute;
+      right: -10px;
+      top: 6px;
+      font-family: ygo-atk-def, serif;
+      font-size: 48px;
+      letter-spacing: 0;
+      z-index: 20;
+    }
+
     .card-atk-infinate {
       position: absolute;
       right: 48px;
@@ -911,7 +1198,6 @@ export default {
       font-size: 61px;
     }
 
-
     .card-def {
       position: absolute;
       right: 124px;
@@ -919,6 +1205,26 @@ export default {
       font-family: ygo-atk-def, serif;
       font-size: 61px;
       letter-spacing: 2px;
+      z-index: 20;
+    }
+
+    .def10000 {
+      position: absolute;
+      right: -2px;
+      top: 3px;
+      font-family: ygo-atk-def, serif;
+      font-size: 54px;
+      letter-spacing: 0;
+      z-index: 20;
+    }
+
+    .def100000 {
+      position: absolute;
+      right: -10px;
+      top: 6px;
+      font-family: ygo-atk-def, serif;
+      font-size: 48px;
+      letter-spacing: 0;
       z-index: 20;
     }
 

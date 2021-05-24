@@ -1,0 +1,52 @@
+.kr-class {
+  font-family: ygo-kr, serif;
+
+  .card-name {
+    font-family: ygo-kr-name, serif;
+    top: 100px;
+    font-size: 106px;
+    letter-spacing: 4px;
+    word-spacing: -20px;
+  }
+
+  .spell-trap {
+    font-family: ygo-kr-race, serif;
+    top: 246px;
+    font-size: 88px;
+    right: 142px;
+    word-spacing: 5px;
+    transform: scaleY(0.75);
+    transform-origin: 50% 50%;
+
+    .spell-trap-icon {
+      transform: scaleY(calc(1 / 0.75));
+      margin-left: 12px;
+      margin-right: 12px;
+    }
+  }
+
+  .pendulum-description {
+    top: 1284px;
+    font-size: calc(36px * var(--descriptionZoom));
+    line-height: 1.19;
+    word-spacing: 5px;
+  }
+
+  .card-description {
+    top: 1529px;
+    font-size: calc(36px * var(--descriptionZoom));
+    line-height: 1.19;
+
+    .card-effect {
+      font-family: ygo-kr-race, serif;
+      font-size: calc(48px * var(--descriptionZoom));
+      margin-bottom: -8px;
+      word-spacing: 12px;
+    }
+
+    .description-info {
+      margin-top: 8px;
+      word-spacing: 5px;
+    }
+  }
+}

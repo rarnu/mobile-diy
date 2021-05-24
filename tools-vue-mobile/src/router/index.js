@@ -18,9 +18,9 @@ const routes = [
             {
                 path: 'dataview',
                 name: 'dataview',
-                component: () => import(/* webpackChunkName: "yugioh" */ '../views/yugioh/DataView.vue'),
+                component: () => import('../views/yugioh/DataView.vue'),
                 meta: {
-                    title: '数据设定'
+                    title: '移动制卡器'
                 }
             }
         ]

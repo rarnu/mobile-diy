@@ -9,7 +9,6 @@ import android.util.Log
 import android.widget.Toast
 import com.isyscore.kotlin.common.unzip
 import com.rarnu.diy.mobile.R
-import com.rarnu.diy.mobile.runOnMainThread
 import java.io.File
 import java.util.*
 import kotlin.concurrent.thread
@@ -78,11 +77,12 @@ class FileUtil(ctx: Context) {
     }
 
     private fun saveImageToDCIM(ctx: Context, bitmap: Bitmap, name: String) {
+        val ts = System.currentTimeMillis()
         val cv = ContentValues().apply {
             put(MediaStore.Images.Media.DESCRIPTION, name)
-            put(MediaStore.Images.Media.DISPLAY_NAME, "$name.png")
+            put(MediaStore.Images.Media.DISPLAY_NAME, "${name}_${ts}.png")
             put(MediaStore.Images.Media.MIME_TYPE, "image/png")
-            put(MediaStore.Images.Media.TITLE, "${name}_${System.currentTimeMillis()}.png")
+            put(MediaStore.Images.Media.TITLE, "${name}_${ts}.png")
             put(MediaStore.Images.Media.RELATIVE_PATH, "DCIM/YGODIY")
         }
         val external = MediaStore.Images.Media.EXTERNAL_CONTENT_URI

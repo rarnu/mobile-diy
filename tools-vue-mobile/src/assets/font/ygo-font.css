@@ -88,3 +88,24 @@
     url("ygo-password.woff") format("woff");
     font-display: swap;
 }
+
+@font-face {
+    font-family: "ygo-kr";
+    src: url("ygo-kr.woff2") format("woff2"),
+    url("ygo-kr.woff") format("woff");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "ygo-kr-name";
+    src: url("ygo-kr-name.woff2") format("woff2"),
+    url("ygo-kr-name.woff") format("woff");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "ygo-kr-race";
+    src: url("ygo-kr-race.woff2") format("woff2"),
+    url("ygo-kr-race.woff") format("woff");
+    font-display: swap;
+}

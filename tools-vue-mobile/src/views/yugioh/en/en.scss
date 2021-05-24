@@ -36,23 +36,23 @@
 
     .pendulum-description {
         top: 1278px;
-        font-size: 42px;
+        font-size: calc(42px * var(--descriptionZoom));
         line-height: 1.03;
     }
 
     .card-description {
         top: 1521px;
-        font-size: 42px;
+        font-size: calc(42px * var(--descriptionZoom));
         line-height: 1.03;
 
         .card-effect {
             font-family: ygo-en-race, serif;
-            font-size: 56px;
+            font-size: calc(56px * var(--descriptionZoom));
             letter-spacing: 1px;
         }
     }
 
     .small-description {
-        font-size: 36px;
+        font-size: calc(36px * var(--descriptionZoom));
     }
 }

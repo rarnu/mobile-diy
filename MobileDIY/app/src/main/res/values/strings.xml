@@ -28,9 +28,9 @@
     <string name="str_json_saved">卡片信息已保存.</string>
     <string name="str_no_kk_found">没有找到注音信息.</string>
     <string name="str_reinstall_server">重新安装数据</string>
-    <string name="str_reinstall_server_desc">制卡数据出现问题或版本过旧时，使用此选项可以重新安装数据包</string>
+    <string name="str_reinstall_server_desc">使用此选项可以重新安装数据包</string>
     <string name="str_reinstall">重新安装</string>
-    <string name="str_about_app">关于手机制卡器 3.3.3</string>
+    <string name="str_about_app">关于手机制卡器 3.6.1</string>
     <string name="str_about_app_desc">查看制卡器相关信息，开源协议等</string>
     <string name="str_confirm">确认</string>
     <string name="str_ok">确认</string>

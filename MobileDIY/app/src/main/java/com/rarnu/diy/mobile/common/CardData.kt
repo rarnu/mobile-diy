@@ -1,5 +1,6 @@
 package com.rarnu.diy.mobile.common
 
+import android.util.Log
 import com.isyscore.kotlin.common.json.JSONObject
 import java.io.Serializable
 
@@ -28,12 +29,14 @@ data class CardData(
     var laser: Boolean = true,
     var radius: Boolean = true,
     var cardBack: Boolean = false,
-    var scale: Double = 0.30,
+    var scale: Double = 1.0,
     var firstLineCompress: Boolean = false,
     var flash0: Boolean = false,
     var flash1: Boolean = false,
     var flash2: Int = 0,
-    var redName: String = ""
+    var redName: String = "",
+    var scalePendulumImage: Boolean = false,
+    var descriptionZoom: Double = 1.0
 ) : Serializable {
 
     companion object {
@@ -73,7 +76,9 @@ data class CardData(
                 flash0 = json.getBoolean("flash0"),
                 flash1 = json.getBoolean("flash1"),
                 flash2 = json.getInt("flash2"),
-                redName = json.getString("redName")
+                redName = json.getString("redName"),
+                scalePendulumImage = json.getBoolean("scalePendulumImage"),
+                descriptionZoom = json.getDouble("descriptionZoom")
             )
         } catch (th: Throwable) {
             null
@@ -109,6 +114,8 @@ data class CardData(
         str += "flash1: $flash1,"
         str += "flash2: $flash2,"
         str += "redName: '${redName}',"
+        str += "scalePendulumImage: $scalePendulumImage,"
+        str += "descriptionZoom: $descriptionZoom,"
         str += "image: '${image}'"
         return "{${str}}"
     }
